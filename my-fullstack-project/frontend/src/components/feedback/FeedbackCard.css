@@ -1,0 +1,40 @@
+.feedback-card {
+  transition: transform 0.2s ease-in-out;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.stars-container {
+  display: flex;
+  gap: 2px;
+}
+
+.star {
+  color: #ddd;
+  transition: color 0.2s ease-in-out;
+}
+
+.star.filled {
+  color: #ffd700;
+}
+
+.feedback-card .card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.feedback-card .card-subtitle {
+  font-size: 0.9rem;
+}
+
+.feedback-card .card-text {
+  margin-top: 1rem;
+  color: #666;
+  line-height: 1.5;
+} 

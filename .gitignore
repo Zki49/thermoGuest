@@ -1,0 +1,39 @@
+# Dependencies
+my-fullstack-project/frontend/node_modules/
+my-fullstack-project/backend/node_modules/
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+/dist
+/build
+my-fullstack-project/frontend/dist/
+my-fullstack-project/frontend/build/
+my-fullstack-project/backend/dist/
+my-fullstack-project/backend/build/
+
+# Database
+old-workspace/data/
+*.sqlite
+*.db
+
+# Logs
+*.log
+logs/ 

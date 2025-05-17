@@ -1,0 +1,13 @@
+.intervention-list-container {
+  padding: 2rem 0;
+}
+
+.intervention-card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  border: none;
+}
+
+.intervention-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+} 
