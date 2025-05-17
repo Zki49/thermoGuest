@@ -18,4 +18,18 @@ exports.createTask = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+};
+
+exports.getTasks = async (req, res) => {
+  try {
+    const { employee } = req.query;
+    let where = {};
+    if (employee) {
+      where.employee = employee;
+    }
+    const tasks = await Task.findAll({ where, order: [['date_created', 'DESC']] });
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }; 
