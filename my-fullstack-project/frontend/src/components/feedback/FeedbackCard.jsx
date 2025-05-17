@@ -15,7 +15,7 @@ const FeedbackCard = ({ feedback }) => {
   };
 
   return (
-    <Card className="feedback-card mb-3">
+    <Card className="feedback-card mb-4">
       <Card.Body>
         <div className="d-flex justify-content-between align-items-start">
           <div>
