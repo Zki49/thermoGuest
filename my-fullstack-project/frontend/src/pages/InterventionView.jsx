@@ -94,7 +94,22 @@ const InterventionView = () => {
               </ListGroup.Item>
             ))}
           </ListGroup>
-          <Button variant="primary" className="me-2">Demander un devis</Button>
+          <Button 
+            variant="primary" 
+            className="me-2"
+            onClick={async () => {
+              try {
+                const res = await axios.post('http://localhost:3001/api/tasks', {
+                  description: `Demande de devis pour l'intervention #${intervention.id} : ${intervention.description}`
+                });
+                alert('Demande de devis envoyée !');
+              } catch (err) {
+                alert("Erreur lors de la demande de devis");
+              }
+            }}
+          >
+            Demander un devis
+          </Button>
           <Button variant="success">Laisser un feedback</Button>
         </Card.Body>
       </Card>

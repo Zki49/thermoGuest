@@ -2,12 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const sequelize = require('./config/database');
-const interventionRoutes = require('./routes/interventionRoutes');
-const userRoutes = require('./routes/userRoutes');
-const stockRoutes = require('./routes/stockRoutes');
-const feedbackRoutes = require('./routes/feedbackRoutes');
-const documentRoutes = require('./routes/documentRoutes');
-const interventionStockRoutes = require('./routes/interventionStockRoutes');
+const mainRoutes = require('./routes');
 
 const app = express();
 
@@ -18,13 +13,8 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Routes
-app.use('/api', interventionRoutes);
-app.use('/api', userRoutes);
-app.use('/api', stockRoutes);
-app.use('/api', feedbackRoutes);
-app.use('/api', documentRoutes);
-app.use('/api', interventionStockRoutes);
+// Utilisation du routeur principal
+app.use('/api', mainRoutes);
 
 // Gestion des erreurs
 app.use((err, req, res, next) => {
