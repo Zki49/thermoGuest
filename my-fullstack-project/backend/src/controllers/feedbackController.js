@@ -48,4 +48,34 @@ exports.getFeedbacksByInterventionId = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Erreur lors de la récupération des feedbacks pour l\'intervention' });
   }
+};
+
+// Créer un nouveau feedback
+exports.createFeedback = async (req, res) => {
+  try {
+    const { intervention_id, client_id, comment, rating } = req.body;
+
+    // Validation des données
+    if (!intervention_id || !client_id || !rating) {
+      return res.status(400).json({ error: 'Tous les champs obligatoires doivent être remplis' });
+    }
+
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'La note doit être comprise entre 1 et 5' });
+    }
+
+    const feedback = await Feedback.create({
+      intervention_id,
+      client_id,
+      comment,
+      rating,
+      created_at: new Date(),
+      updated_at: new Date()
+    });
+
+    res.status(201).json(feedback);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur lors de la création du feedback' });
+  }
 }; 

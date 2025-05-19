@@ -8,4 +8,7 @@ router.get('/feedbacks', feedbackController.getAllFeedbacks);
 // Récupérer les feedbacks par ID d'intervention
 router.get('/feedbacks/intervention/:interventionId', feedbackController.getFeedbacksByInterventionId);
 
+// Créer un nouveau feedback
+router.post('/feedbacks', feedbackController.createFeedback);
+
 module.exports = router; 

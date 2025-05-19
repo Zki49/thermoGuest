@@ -1,7 +1,51 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Card, Button, Container, Alert, ListGroup, Spinner, Table } from 'react-bootstrap';
+import FeedbackForm from '../feedback/FeedbackForm';
 
-const InterventionDetails = ({ intervention, user, stocks, feedbacks, loading, error, navigate, onAskQuote, onFeedback }) => {
+// Fonction utilitaire pour afficher les étoiles
+const renderStars = (rating) => {
+  return (
+    <span>
+      {[1,2,3,4,5].map((star) => (
+        <span key={star} style={{ color: star <= rating ? '#ffd700' : '#ddd', fontSize: '1.2em' }}>★</span>
+      ))}
+    </span>
+  );
+};
+
+const InterventionDetails = ({ intervention, user, stocks, loading, error, navigate, onAskQuote }) => {
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [feedbacksLoading, setFeedbacksLoading] = useState(true);
+  const [feedbacksError, setFeedbacksError] = useState(null);
+
+  // Charger les feedbacks à chaque affichage de la page
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      setFeedbacksLoading(true);
+      setFeedbacksError(null);
+      try {
+        const res = await axios.get(`http://localhost:3001/api/feedbacks/intervention/${intervention.id}`);
+        setFeedbacks(res.data);
+      } catch (e) {
+        setFeedbacks([]);
+        setFeedbacksError("Erreur lors du chargement des feedbacks");
+      }
+      setFeedbacksLoading(false);
+    };
+    if (intervention && intervention.id) {
+      fetchFeedbacks();
+    }
+  }, [intervention.id]);
+
+  const handleFeedbackSubmitted = () => {
+    setShowFeedbackForm(false);
+    // Recharge les feedbacks depuis l'API
+    axios.get(`http://localhost:3001/api/feedbacks/intervention/${intervention.id}`)
+      .then(res => setFeedbacks(res.data));
+  };
+
   if (!intervention) {
     return <Alert variant="danger" className="m-4">Aucune donnée d'intervention à afficher.</Alert>;
   }
@@ -11,6 +55,7 @@ const InterventionDetails = ({ intervention, user, stocks, feedbacks, loading, e
   if (error) {
     return <Alert variant="danger" className="m-4">{error}</Alert>;
   }
+
   return (
     <Container className="py-4">
       <Button variant="secondary" className="mb-3" onClick={() => navigate(-1)}>
@@ -47,16 +92,38 @@ const InterventionDetails = ({ intervention, user, stocks, feedbacks, loading, e
           )}
           <hr />
           <div><strong>Feedbacks :</strong></div>
-          <ListGroup className="mb-3">
-            {feedbacks.length === 0 && <ListGroup.Item>Aucun feedback.</ListGroup.Item>}
-            {feedbacks.map((fb) => (
-              <ListGroup.Item key={fb.id}>
-                <strong>{fb.client_name} :</strong> {fb.comment} (Note : {fb.rating}/5)
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-          <Button variant="primary" className="me-2" onClick={onAskQuote}>Demander un devis</Button>
-          <Button variant="success" onClick={onFeedback}>Laisser un feedback</Button>
+          {feedbacksLoading ? (
+            <div className="mb-3"><Spinner animation="border" size="sm" /> Chargement des feedbacks...</div>
+          ) : feedbacksError ? (
+            <Alert variant="danger">{feedbacksError}</Alert>
+          ) : (
+            <ListGroup className="mb-3">
+              {feedbacks.length === 0 && <ListGroup.Item>Aucun feedback.</ListGroup.Item>}
+              {feedbacks.map((fb) => (
+                <ListGroup.Item key={fb.id || Math.random()}>
+                  <strong>{fb.client_name} :</strong> {fb.comment} {renderStars(fb.rating)}
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          )}
+          <div className="d-flex gap-2">
+            <Button variant="primary" onClick={onAskQuote}>Demander un devis</Button>
+            <Button 
+              variant="success" 
+              onClick={() => setShowFeedbackForm(!showFeedbackForm)}
+            >
+              {showFeedbackForm ? 'Annuler' : 'Laisser un feedback'}
+            </Button>
+          </div>
+          {showFeedbackForm && (
+            <div className="mt-4">
+              <FeedbackForm 
+                interventionId={intervention.id}
+                clientId={user.id}
+                onFeedbackSubmitted={handleFeedbackSubmitted}
+              />
+            </div>
+          )}
         </Card.Body>
       </Card>
     </Container>
