@@ -88,13 +88,15 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
       setLoading(true);
       const formattedValues = {
         ...values,
+        user_id: values.technician_id,
+        status: 'PLANIFIÉ',
         scheduled_date: values.scheduled_date.toISOString(),
         materials: selectedMaterials.map(material => ({
           stock_id: material.id,
-          quantity: material.quantity,
-          unit_price: material.unit_price
+          quantity_used: material.quantity
         }))
       };
+      delete formattedValues.technician_id;
 
       await axios.post('http://localhost:3001/api/interventions', formattedValues);
       message.success('Intervention créée avec succès');

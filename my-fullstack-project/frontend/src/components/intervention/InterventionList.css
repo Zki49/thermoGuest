@@ -23,12 +23,9 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.btn-create-intervention {
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  gap: 4px;
+.btn-create-intervention i {
+  font-size: 1.1em;
 }
-
 
 .filter-section {
   background-color: #f8f9fa;

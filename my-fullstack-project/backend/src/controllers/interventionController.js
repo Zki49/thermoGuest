@@ -1,5 +1,8 @@
 const Intervention = require('../models/Intervention');
+const InterventionStock = require('../models/InterventionStock');
+const Stock = require('../models/Stock');
 const { Op } = require('sequelize');
+const sequelize = require('../config/database');
 
 const getAllInterventions = async (req, res) => {
   try {
@@ -62,12 +65,39 @@ const getTodayInterventions = async (req, res) => {
 };
 
 const createIntervention = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
-    const intervention = await Intervention.create(req.body);
+    const { materials, ...interventionData } = req.body;
+    // Créer l'intervention
+    const intervention = await Intervention.create(interventionData, { transaction: t });
+
+    // Pour chaque matériau, insérer dans intervention_stocks et mettre à jour le stock
+    if (Array.isArray(materials)) {
+      for (const mat of materials) {
+        // Insérer dans la table d'association
+        await InterventionStock.create({
+          intervention_id: intervention.id,
+          stock_id: mat.stock_id,
+          quantity_used: mat.quantity_used
+        }, { transaction: t });
+        // Mettre à jour le stock
+        const stock = await Stock.findByPk(mat.stock_id, { transaction: t });
+        if (stock) {
+          if (stock.quantity < mat.quantity_used) {
+            throw new Error(`Stock insuffisant pour l'article ${stock.name}`);
+          }
+          stock.quantity -= mat.quantity_used;
+          await stock.save({ transaction: t });
+        }
+      }
+    }
+
+    await t.commit();
     res.status(201).json(intervention);
   } catch (error) {
+    await t.rollback();
     console.error('Erreur lors de la création de l\'intervention:', error);
-    res.status(500).json({ message: 'Erreur serveur' });
+    res.status(500).json({ message: error.message || 'Erreur serveur' });
   }
 };
 

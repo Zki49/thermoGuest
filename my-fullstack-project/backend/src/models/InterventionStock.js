@@ -32,7 +32,9 @@ const InterventionStock = sequelize.define('InterventionStock', {
   }
 }, {
   tableName: 'intervention_stocks',
-  timestamps: false // Assumant qu'il n'y a pas de timestamps dans cette table intermédiaire
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
 });
 
 // Définir les relations si nécessaire (par exemple, pour inclure le nom du stock)
