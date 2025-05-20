@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Spinner, Alert, Container, Form, Button, Row, Col, Pagination } from 'react-bootstrap';
+import { Card, Spinner, Alert, Container, Form, Button, Row, Col, Pagination, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import Navbar from '../navbar/Navbar';
 import './InterventionList.css';
 import { useNavigate } from 'react-router-dom';
+import CreateInterventionForm from '../CreateInterventionForm';
 
 const InterventionList = () => {
   const [interventions, setInterventions] = useState([]);
@@ -13,6 +14,7 @@ const InterventionList = () => {
   const [user, setUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [filters, setFilters] = useState({
     search: '',
     dateStart: '',
@@ -66,6 +68,21 @@ const InterventionList = () => {
     }));
   };
 
+  const handleCreateSuccess = () => {
+    setShowCreateModal(false);
+    // Recharger la liste des interventions
+    const fetchInterventions = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/interventions');
+        setInterventions(response.data);
+        setFiltered(response.data);
+      } catch (err) {
+        setError('Erreur lors du chargement des interventions');
+      }
+    };
+    fetchInterventions();
+  };
+
   // Calculer les éléments pour la page courante
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -98,7 +115,9 @@ const InterventionList = () => {
         window.location.href = '/login';
       }} />}
       <Container className="intervention-list-container">
-        <h2 className="mb-4">Toutes les interventions</h2>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2>Liste des interventions</h2>
+        </div>
         <Form className="mb-4" onSubmit={handleFilter}>
           <Row className="g-2 align-items-end">
             <Col md={5}>
@@ -147,6 +166,20 @@ const InterventionList = () => {
             </Col>
           </Row>
         </Form>
+
+        <Row className="mb-4">
+          <Col className="d-flex justify-content-end">
+            <Button 
+              variant="primary" 
+              onClick={() => setShowCreateModal(true)}
+              className="d-flex align-items-center gap-2 btn-create-intervention"
+            >
+              <i className="bi bi-plus-circle"></i>
+              Nouvelle intervention
+            </Button>
+          </Col>
+        </Row>
+
         {currentItems.map(intervention => (
           <Card key={intervention.id} className="mb-3 intervention-card" onClick={() => navigate(`/interventions/${intervention.id}`, { state: { intervention } })} style={{ cursor: 'pointer' }}>
             <Card.Body>
@@ -192,6 +225,12 @@ const InterventionList = () => {
             />
           </Pagination>
         </div>
+
+        <CreateInterventionForm
+          visible={showCreateModal}
+          onCancel={() => setShowCreateModal(false)}
+          onSuccess={handleCreateSuccess}
+        />
       </Container>
     </>
   );

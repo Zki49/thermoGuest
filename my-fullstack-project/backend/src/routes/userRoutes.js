@@ -22,7 +22,10 @@ router.post('/loginAsTechnician2', userController.loginAsTechnician2);
 router.get('/verify-token', userController.verifyToken);
 router.get('/clients', userController.getAllClients);
 
-// Récupérer un utilisateur par ID
+// Route pour les techniciens (doit être avant la route avec :id)
+router.get('/users/technicians', userController.getAllTechnicians);
+
+// Récupérer un utilisateur par ID (doit être après les routes spécifiques)
 router.get('/users/:id', async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id, {

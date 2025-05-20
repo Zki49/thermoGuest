@@ -48,6 +48,23 @@ const getAllClients = async (req, res) => {
   }
 };
 
+// Récupérer tous les techniciens
+const getAllTechnicians = async (req, res) => {
+  try {
+    if (!await checkDatabaseConnection()) {
+      return res.status(503).json({ message: 'Service temporairement indisponible' });
+    }
+    const technicians = await User.findAll({
+      where: { role: 'technician' },
+      attributes: ['id', 'first_name', 'last_name', 'email', 'role']
+    });
+    res.json(technicians);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des techniciens:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
 // Créer un nouvel utilisateur
 const createUser = async (req, res) => {
   try {
@@ -391,6 +408,7 @@ const verifyToken = async (req, res) => {
 module.exports = {
   getAllUsers,
   getAllClients,
+  getAllTechnicians,
   createUser,
   login,
   loginAsAdmin,

@@ -1,10 +1,68 @@
 .intervention-list-container {
-  padding: 2rem 0;
+  padding: 20px;
+}
+
+.interventions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.btn-create-intervention {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-create-intervention:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-create-intervention {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  gap: 4px;
+}
+
+
+.filter-section {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
 .intervention-card {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-  border: none;
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.intervention-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.intervention-card .card-body {
+  padding: 1.25rem;
+}
+
+.intervention-card .badge {
+  font-size: 0.85em;
+  padding: 6px 12px;
+}
+
+.intervention-card .btn-details {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.intervention-card:hover .btn-details {
+  opacity: 1;
 }
 
 .intervention-card .card-title {
