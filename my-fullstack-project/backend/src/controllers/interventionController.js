@@ -113,9 +113,58 @@ const getInterventionById = async (req, res) => {
   }
 };
 
+const deleteIntervention = async (req, res) => {
+  const t = await sequelize.transaction();
+  try {
+    const { id } = req.params;
+    const { returnToStock } = req.body;
+
+    // Récupérer l'intervention SANS include
+    const intervention = await Intervention.findByPk(id, { transaction: t });
+
+    if (!intervention) {
+      await t.rollback();
+      return res.status(404).json({ message: 'Intervention non trouvée' });
+    }
+
+    // Si returnToStock est true, remettre les quantités dans le stock
+    if (returnToStock) {
+      const interventionStocks = await InterventionStock.findAll({
+        where: { intervention_id: id },
+        transaction: t
+      });
+
+      for (const is of interventionStocks) {
+        const stock = await Stock.findByPk(is.stock_id, { transaction: t });
+        if (stock) {
+          stock.quantity += is.quantity_used;
+          await stock.save({ transaction: t });
+        }
+      }
+    }
+
+    // Supprimer les entrées dans la table d'association
+    await InterventionStock.destroy({
+      where: { intervention_id: id },
+      transaction: t
+    });
+
+    // Supprimer l'intervention
+    await intervention.destroy({ transaction: t });
+
+    await t.commit();
+    res.json({ message: 'Intervention supprimée avec succès' });
+  } catch (error) {
+    await t.rollback();
+    console.error('Erreur lors de la suppression de l\'intervention:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
 module.exports = {
   getAllInterventions,
   createIntervention,
   getTodayInterventions,
-  getInterventionById
+  getInterventionById,
+  deleteIntervention
 }; 

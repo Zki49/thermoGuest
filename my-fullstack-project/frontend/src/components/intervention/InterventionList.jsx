@@ -15,6 +15,9 @@ const InterventionList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedIntervention, setSelectedIntervention] = useState(null);
+  const [returnToStock, setReturnToStock] = useState(false);
   const [filters, setFilters] = useState({
     search: '',
     dateStart: '',
@@ -81,6 +84,27 @@ const InterventionList = () => {
       }
     };
     fetchInterventions();
+  };
+
+  const handleDeleteClick = (intervention, e) => {
+    e.stopPropagation(); // Empêche la navigation vers les détails
+    setSelectedIntervention(intervention);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await axios.delete(`http://localhost:3001/api/interventions/${selectedIntervention.id}`, {
+        data: { returnToStock }
+      });
+      setInterventions(interventions.filter(i => i.id !== selectedIntervention.id));
+      setFiltered(filtered.filter(i => i.id !== selectedIntervention.id));
+      setShowDeleteModal(false);
+      setSelectedIntervention(null);
+      setReturnToStock(false);
+    } catch (error) {
+      setError('Erreur lors de la suppression de l\'intervention');
+    }
   };
 
   // Calculer les éléments pour la page courante
@@ -181,14 +205,27 @@ const InterventionList = () => {
         </Row>
 
         {currentItems.map(intervention => (
-          <Card key={intervention.id} className="mb-3 intervention-card" onClick={() => navigate(`/interventions/${intervention.id}`, { state: { intervention } })} style={{ cursor: 'pointer' }}>
+          <Card key={intervention.id} className="mb-3 intervention-card">
             <Card.Body>
-              <Card.Title>Intervention #{intervention.id}</Card.Title>
-              <Card.Text>
-                <strong>Date :</strong> {new Date(intervention.scheduled_date).toLocaleDateString('fr-FR')}<br />
-                <strong>Description :</strong> {intervention.description}<br />
-                <strong>Statut :</strong> {intervention.status}
-              </Card.Text>
+              <div className="d-flex justify-content-between align-items-start">
+                <div onClick={() => navigate(`/interventions/${intervention.id}`, { state: { intervention } })} style={{ cursor: 'pointer', flex: 1 }}>
+                  <Card.Title>Intervention #{intervention.id}</Card.Title>
+                  <Card.Text>
+                    <strong>Date :</strong> {new Date(intervention.scheduled_date).toLocaleDateString('fr-FR')}<br />
+                    <strong>Description :</strong> {intervention.description}<br />
+                    <strong>Statut :</strong> {intervention.status}
+                  </Card.Text>
+                </div>
+                <div className="d-flex justify-content-end" style={{ minWidth: 120 }}>
+                  <Button 
+                    variant="danger" 
+                    size="sm"
+                    onClick={(e) => handleDeleteClick(intervention, e)}
+                  >
+                    <i className="bi bi-trash"></i> Supprimer
+                  </Button>
+                </div>
+              </div>
             </Card.Body>
           </Card>
         ))}
@@ -225,6 +262,37 @@ const InterventionList = () => {
             />
           </Pagination>
         </div>
+
+        <Modal show={showDeleteModal} onHide={() => {
+          setShowDeleteModal(false);
+          setSelectedIntervention(null);
+          setReturnToStock(false);
+        }}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirmer la suppression</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Êtes-vous sûr de vouloir supprimer l'intervention #{selectedIntervention?.id} ?</p>
+            <Form.Check 
+              type="checkbox"
+              label="Remettre les quantités utilisées dans le stock"
+              checked={returnToStock}
+              onChange={(e) => setReturnToStock(e.target.checked)}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => {
+              setShowDeleteModal(false);
+              setSelectedIntervention(null);
+              setReturnToStock(false);
+            }}>
+              Annuler
+            </Button>
+            <Button variant="danger" onClick={handleDeleteConfirm}>
+              Supprimer
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
         <CreateInterventionForm
           visible={showCreateModal}
