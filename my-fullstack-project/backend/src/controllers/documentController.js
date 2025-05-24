@@ -73,7 +73,7 @@ const createDocument = async (req, res) => {
 const updateDocument = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, amount } = req.body;
+    const { status, amount, with_tva } = req.body;
 
     const document = await Document.findByPk(id);
     if (!document) {
@@ -83,6 +83,7 @@ const updateDocument = async (req, res) => {
     // Mise à jour des champs
     if (status) document.status = status;
     if (amount) document.amount = amount;
+    if (typeof with_tva !== 'undefined') document.with_tva = with_tva;
 
     await document.save();
     res.json(document);

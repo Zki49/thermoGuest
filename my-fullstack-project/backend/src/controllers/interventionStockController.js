@@ -10,18 +10,19 @@ const getInterventionStocks = async (req, res) => {
         {
           model: Stock,
           as: 'stock',
-          attributes: ['name']
+          attributes: ['name', 'unit_price']
         }
       ]
     });
 
-    // Mapper pour inclure le nom du stock directement
+    // Mapper pour inclure le nom et le prix unitaire du stock directement
     const formattedStocks = interventionStocks.map(item => ({
       id: item.id,
       intervention_id: item.intervention_id,
       stock_id: item.stock_id,
       quantity_used: item.quantity_used,
-      stock_name: item.stock ? item.stock.name : 'Stock inconnu'
+      stock_name: item.stock ? item.stock.name : 'Stock inconnu',
+      unit_price: item.stock ? item.stock.unit_price : 0
     }));
 
     res.json(formattedStocks);

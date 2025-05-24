@@ -41,6 +41,11 @@ const Document = sequelize.define('Document', {
     type: DataTypes.ENUM('EN_ATTENTE', 'PAYÉ', 'ANNULÉ'),
     allowNull: false,
     defaultValue: 'EN_ATTENTE'
+  },
+  with_tva: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   }
 }, {
   tableName: 'documents',

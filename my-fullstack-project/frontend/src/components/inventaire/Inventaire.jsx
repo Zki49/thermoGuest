@@ -21,7 +21,8 @@ const Inventaire = () => {
     name: '',
     description: '',
     quantity: '',
-    quantity_min: ''
+    quantity_min: '',
+    unit_price: ''
   });
 
   // Fonction de debounce pour le terme de recherche
@@ -81,7 +82,8 @@ const Inventaire = () => {
       name: stock.name,
       description: stock.description,
       quantity: stock.quantity,
-      quantity_min: stock.quantity_min
+      quantity_min: stock.quantity_min,
+      unit_price: stock.unit_price || ''
     });
     setShowEditModal(true);
   };
@@ -96,7 +98,8 @@ const Inventaire = () => {
       name: '',
       description: '',
       quantity: '',
-      quantity_min: ''
+      quantity_min: '',
+      unit_price: ''
     });
     setShowCreateModal(true);
   };
@@ -219,6 +222,7 @@ const Inventaire = () => {
                   <th>Description</th>
                   <th>Quantité</th>
                   <th>Quantité min</th>
+                  <th>Prix unitaire (€)</th>
                   <th>Dernière mise à jour</th>
                   <th>Actions</th>
                 </tr>
@@ -230,6 +234,7 @@ const Inventaire = () => {
                     <td>{stock.description}</td>
                     <td>{stock.quantity}</td>
                     <td>{stock.quantity_min}</td>
+                    <td>{stock.unit_price ? Number(stock.unit_price).toFixed(2) : '-'}</td>
                     <td>{new Date(stock.updated_at).toLocaleDateString()}</td>
                     <td>
                       <div className="d-flex gap-2">
@@ -343,6 +348,19 @@ const Inventaire = () => {
               />
             </Form.Group>
 
+            <Form.Group className="mb-3">
+              <Form.Label>Prix unitaire (€)</Form.Label>
+              <Form.Control
+                type="number"
+                name="unit_price"
+                value={formData.unit_price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                required
+              />
+            </Form.Group>
+
             <div className="d-flex justify-content-end gap-2">
               <Button variant="secondary" onClick={handleClose}>
                 Annuler
@@ -405,6 +423,19 @@ const Inventaire = () => {
                 onChange={handleChange}
                 required
                 min="0"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Prix unitaire (€)</Form.Label>
+              <Form.Control
+                type="number"
+                name="unit_price"
+                value={formData.unit_price}
+                onChange={handleChange}
+                min="0"
+                step="0.01"
+                required
               />
             </Form.Group>
 

@@ -32,7 +32,12 @@ const Stock = sequelize.define('Stock', {
   updated_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
-  }
+  },
+  unit_price: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0
+  },
 }, {
   tableName: 'stocks',
   timestamps: true,
