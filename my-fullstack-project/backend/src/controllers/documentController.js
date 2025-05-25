@@ -2,6 +2,7 @@ const Document = require('../models/Document');
 const Intervention = require('../models/Intervention');
 const { Op } = require('sequelize');
 const PDFDocument = require('pdfkit');
+const InterventionStock = require('../models/InterventionStock');
 
 // Récupérer tous les documents
 const getAllDocuments = async (req, res) => {
@@ -73,7 +74,7 @@ const createDocument = async (req, res) => {
 const updateDocument = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, amount, with_tva } = req.body;
+    const { status, amount, with_tva, products } = req.body;
 
     const document = await Document.findByPk(id);
     if (!document) {
@@ -84,6 +85,36 @@ const updateDocument = async (req, res) => {
     if (status) document.status = status;
     if (amount) document.amount = amount;
     if (typeof with_tva !== 'undefined') document.with_tva = with_tva;
+
+    // Synchronisation des produits dans intervention_stocks
+    if (products && document.intervention_id) {
+      const interventionId = document.intervention_id;
+      const currentStocks = await InterventionStock.findAll({ where: { intervention_id: interventionId } });
+      // Suppression des stocks qui ne sont plus présents
+      for (const stock of currentStocks) {
+        if (!products.find(p => Number(p.stock_id) === stock.stock_id)) {
+          await stock.destroy();
+        }
+      }
+      // Ajout ou mise à jour des stocks
+      for (const prod of products) {
+        let stock = currentStocks.find(s => Number(s.stock_id) === Number(prod.stock_id));
+        if (stock) {
+          // Mise à jour si la quantité a changé
+          if (stock.quantity_used !== Number(prod.quantity)) {
+            stock.quantity_used = Number(prod.quantity);
+            await stock.save();
+          }
+        } else {
+          // Ajout
+          await InterventionStock.create({
+            intervention_id: interventionId,
+            stock_id: prod.stock_id,
+            quantity_used: Number(prod.quantity)
+          });
+        }
+      }
+    }
 
     await document.save();
     res.json(document);

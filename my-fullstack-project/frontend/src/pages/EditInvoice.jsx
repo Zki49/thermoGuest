@@ -23,6 +23,10 @@ const EditInvoice = () => {
   const [availableStocks, setAvailableStocks] = useState([]);
   const [selectedStockId, setSelectedStockId] = useState('');
   const [selectedStockQty, setSelectedStockQty] = useState(1);
+  const [showAddClientModal, setShowAddClientModal] = useState(false);
+  const [newClient, setNewClient] = useState({ first_name: '', last_name: '', email: '', password: '' });
+  const [addingClient, setAddingClient] = useState(false);
+  const [addClientError, setAddClientError] = useState('');
 
   // Récupérer l'utilisateur depuis le localStorage
   const user = JSON.parse(localStorage.getItem('user'));
@@ -53,7 +57,8 @@ const EditInvoice = () => {
           stockProducts = stocksRes.data.map(item => ({
             quantity: item.quantity_used,
             description: item.stock_name,
-            unitPrice: item.unit_price !== undefined ? Number(item.unit_price) : 0
+            unitPrice: item.unit_price !== undefined ? Number(item.unit_price) : 0,
+            stock_id: item.stock_id // On conserve le stock_id pour la sauvegarde
           }));
         }
         // Fusionner avec les produits déjà présents (éviter doublons)
@@ -98,14 +103,21 @@ const EditInvoice = () => {
   // Sauvegarde
   const handleSave = async () => {
     try {
+      const productsToSend = products
+        .filter(p => p.stock_id)
+        .map(p => ({
+          stock_id: p.stock_id,
+          quantity: p.quantity
+        }));
       await axios.put(`http://localhost:3001/api/documents/${id}`, {
         client_id: selectedClient,
-        products,
-        amount: totalHT,
+        products: productsToSend,
+        amount: totalTTC,
         tva: tvaEnabled ? TVA_RATE : 0,
         status,
         invoice_date: invoiceDate,
         due_date: dueDate,
+        created_at: invoiceDate,
         with_tva: tvaEnabled
       });
       navigate('/facturations');
@@ -130,7 +142,8 @@ const EditInvoice = () => {
       setProducts([...products, {
         quantity: selectedStockQty,
         description: stock.name,
-        unitPrice: stock.unit_price ? Number(stock.unit_price) : 0
+        unitPrice: stock.unit_price ? Number(stock.unit_price) : 0,
+        stock_id: stock.id
       }]);
       setShowStockModal(false);
       setSelectedStockId('');
@@ -145,6 +158,27 @@ const EditInvoice = () => {
         .catch(() => setAvailableStocks([]));
     }
   }, [showStockModal]);
+
+  const handleAddClient = async (e) => {
+    e.preventDefault();
+    setAddingClient(true);
+    setAddClientError('');
+    try {
+      // Un mot de passe temporaire est requis pour la création
+      const res = await axios.post('http://localhost:3001/api/users', {
+        ...newClient,
+        password: newClient.password || 'Temp1234!'
+      });
+      setClients([...clients, res.data.user]);
+      setSelectedClient(res.data.user.id);
+      setShowAddClientModal(false);
+      setNewClient({ first_name: '', last_name: '', email: '', password: '' });
+    } catch (err) {
+      setAddClientError(err.response?.data?.message || 'Erreur lors de la création du client');
+    } finally {
+      setAddingClient(false);
+    }
+  };
 
   if (loading) {
     return <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}><Spinner animation="border" /></div>;
@@ -194,12 +228,15 @@ const EditInvoice = () => {
               <Card.Body>
                 <Form.Group>
                   <Form.Label>Client</Form.Label>
-                  <Form.Select value={selectedClient} onChange={handleClientChange} required>
-                    <option value="">Sélectionner un client</option>
-                    {clients.map(client => (
-                      <option key={client.id} value={client.id}>{client.first_name} {client.last_name} ({client.email})</option>
-                    ))}
-                  </Form.Select>
+                  <div className="d-flex align-items-center gap-2">
+                    <Form.Select value={selectedClient} onChange={handleClientChange} required>
+                      <option value="">Sélectionner un client</option>
+                      {clients.map(client => (
+                        <option key={client.id} value={client.id}>{client.first_name} {client.last_name} ({client.email})</option>
+                      ))}
+                    </Form.Select>
+                    <Button variant="outline-primary" size="sm" onClick={() => setShowAddClientModal(true)} title="Ajouter un client"><i className="bi bi-plus"></i></Button>
+                  </div>
                 </Form.Group>
                 <Form.Group className="mt-3">
                   <Form.Label>Date de la facture</Form.Label>
@@ -276,6 +313,36 @@ const EditInvoice = () => {
             <Button variant="secondary" onClick={() => setShowStockModal(false)}>Annuler</Button>
             <Button variant="primary" onClick={handleConfirmAddStock} disabled={!selectedStockId || selectedStockQty < 1}>Ajouter</Button>
           </Modal.Footer>
+        </Modal>
+        <Modal show={showAddClientModal} onHide={() => setShowAddClientModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Ajouter un client</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleAddClient}>
+              <Form.Group className="mb-2">
+                <Form.Label>Prénom</Form.Label>
+                <Form.Control type="text" value={newClient.first_name} onChange={e => setNewClient({ ...newClient, first_name: e.target.value })} required />
+              </Form.Group>
+              <Form.Group className="mb-2">
+                <Form.Label>Nom</Form.Label>
+                <Form.Control type="text" value={newClient.last_name} onChange={e => setNewClient({ ...newClient, last_name: e.target.value })} required />
+              </Form.Group>
+              <Form.Group className="mb-2">
+                <Form.Label>Email</Form.Label>
+                <Form.Control type="email" value={newClient.email} onChange={e => setNewClient({ ...newClient, email: e.target.value })} required />
+              </Form.Group>
+              <Form.Group className="mb-2">
+                <Form.Label>Mot de passe (temporaire)</Form.Label>
+                <Form.Control type="password" value={newClient.password} onChange={e => setNewClient({ ...newClient, password: e.target.value })} placeholder="Temp1234!" />
+              </Form.Group>
+              {addClientError && <Alert variant="danger">{addClientError}</Alert>}
+              <div className="d-flex justify-content-end gap-2 mt-2">
+                <Button variant="secondary" onClick={() => setShowAddClientModal(false)}>Annuler</Button>
+                <Button variant="primary" type="submit" disabled={addingClient}>{addingClient ? 'Ajout...' : 'Ajouter'}</Button>
+              </div>
+            </Form>
+          </Modal.Body>
         </Modal>
       </div>
     </>
