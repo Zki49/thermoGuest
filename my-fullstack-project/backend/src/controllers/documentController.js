@@ -3,6 +3,8 @@ const Intervention = require('../models/Intervention');
 const { Op } = require('sequelize');
 const PDFDocument = require('pdfkit');
 const InterventionStock = require('../models/InterventionStock');
+const path = require('path');
+require('dotenv').config();
 
 // Récupérer tous les documents
 const getAllDocuments = async (req, res) => {
@@ -170,35 +172,45 @@ const generatePdf = async (req, res) => {
       res.setHeader('Content-Disposition', `inline; filename=document_${doc.id}.pdf`);
       pdf.pipe(res);
 
-      // En-tête
-      pdf.fontSize(10).text('LOGO', 30, 20);
+      // En-tête avec logo
+      try {
+        const logoPath = path.join(__dirname, '../../assets/logo.png');
+        pdf.image(logoPath, 40, 20, { width: 180 });
+      } catch (e) {
+        console.error("Erreur lors de l'ajout du logo :", e);
+      }
+
+      // Bloc entreprise sous le logo
+      const blocY = 90;
+      pdf.font('Helvetica-Bold').text(process.env.COMPANY_NAME, 40, blocY);
+      pdf.font('Helvetica').text(process.env.COMPANY_ADDRESS, 40, blocY + 15);
+      pdf.text(process.env.COMPANY_CITY, 40, blocY + 30);
+      pdf.text(process.env.COMPANY_PHONE, 40, blocY + 45);
+      pdf.text(process.env.COMPANY_EMAIL, 40, blocY + 60);
+
+      // Facture N° et date à droite
       pdf.fontSize(20).fillColor('#7CB518').text('Facture N°' + doc.id, 350, 30, { align: 'left' });
       pdf.fontSize(10).fillColor('black').text('Ville, le ' + (doc.invoice_date ? new Date(doc.invoice_date).toLocaleDateString() : '.../.../...'), 350, 55, { align: 'left' });
 
-      // Infos entreprise
-      pdf.font('Helvetica-Bold').text('Nom de l\'entreprise', 30, 70);
-      pdf.font('Helvetica').text('Adresse', 30, 85);
-      pdf.text('Ville et Code Postal', 30, 100);
-      pdf.text('Numéro de téléphone', 30, 115);
-      pdf.text('Email', 30, 130);
-
       // Infos client
-      pdf.rect(320, 80, 180, 60).stroke();
-      pdf.font('Helvetica-Bold').text('Nom du client', 330, 90);
+      pdf.rect(350, 90, 220, 60).stroke();
+      pdf.font('Helvetica-Bold').text('Nom du client', 360, 100);
       if (doc.User) {
-        pdf.font('Helvetica').text(doc.User.first_name + ' ' + doc.User.last_name, 330, 105);
-        pdf.text(doc.User.email, 330, 120);
+        pdf.font('Helvetica').text(doc.User.first_name + ' ' + doc.User.last_name, 360, 115);
+        pdf.text(doc.User.email, 360, 130);
       }
 
       // Tableau produits/services
-      pdf.rect(30, 160, 470, 100).fillAndStroke('#C6E377', 'black');
+      const tableY = 170;
+      const tableHeight = 25 + stockItems.length * 18;
+      pdf.rect(30, tableY, 600, tableHeight).fillAndStroke('#C6E377', 'black');
       pdf.fillColor('black').font('Helvetica-Bold').fontSize(10);
-      pdf.text('Description', 35, 165);
-      pdf.text('Prix unitaire HT', 200, 165);
-      pdf.text('Quantité', 320, 165);
-      pdf.text('Montant HT', 400, 165);
+      pdf.text('Description', 35, tableY + 5);
+      pdf.text('Prix unitaire HT', 220, tableY + 5);
+      pdf.text('Quantité', 370, tableY + 5);
+      pdf.text('Montant HT', 470, tableY + 5);
       pdf.font('Helvetica').fontSize(10);
-      let y = 185;
+      let y = tableY + 25;
       let totalHT = 0;
       for (const item of stockItems) {
         const desc = item.stock ? item.stock.name : 'Produit';
@@ -207,9 +219,9 @@ const generatePdf = async (req, res) => {
         const montant = unit * qty;
         totalHT += montant;
         pdf.text(desc, 35, y, { width: 150 });
-        pdf.text(unit.toFixed(2) + ' €', 200, y);
-        pdf.text(qty, 320, y);
-        pdf.text(montant.toFixed(2) + ' €', 400, y);
+        pdf.text(unit.toFixed(2) + ' €', 220, y);
+        pdf.text(qty, 370, y);
+        pdf.text(montant.toFixed(2) + ' €', 470, y);
         y += 18;
       }
       if (stockItems.length === 0) {
@@ -217,24 +229,24 @@ const generatePdf = async (req, res) => {
         y += 18;
       }
 
-      // Totaux
+      // Totaux juste sous le tableau
       y += 10;
-      pdf.font('Helvetica-Bold').text('Total HT', 320, y);
-      pdf.font('Helvetica').text(totalHT.toFixed(2) + ' €', 400, y);
+      pdf.font('Helvetica-Bold').text('Total HT', 370, y);
+      pdf.font('Helvetica').text(totalHT.toFixed(2) + ' €', 470, y);
       y += 15;
       const tva = doc.with_tva ? totalHT * 0.21 : 0;
-      pdf.font('Helvetica-Bold').text('TVA 21%', 320, y);
-      pdf.font('Helvetica').text(tva.toFixed(2) + ' €', 400, y);
+      pdf.font('Helvetica-Bold').text('TVA 21%', 370, y);
+      pdf.font('Helvetica').text(tva.toFixed(2) + ' €', 470, y);
       y += 15;
-      pdf.font('Helvetica-Bold').text('Total TTC', 320, y);
-      pdf.font('Helvetica').text((totalHT + tva).toFixed(2) + ' €', 400, y);
+      pdf.font('Helvetica-Bold').text('Total TTC', 370, y);
+      pdf.font('Helvetica').text((totalHT + tva).toFixed(2) + ' €', 470, y);
 
       // Modalités et signature
-      pdf.rect(30, y + 30, 200, 60).stroke();
+      pdf.rect(30, y + 30, 250, 60).stroke();
       pdf.text('Modalités et conditions de règlement :', 35, y + 35);
       pdf.text('Date echeance : ' + (doc.due_date ? new Date(doc.due_date).toLocaleDateString() : '.../.../...'), 35, y + 55);
       pdf.text('Signature :', 400, y + 60);
-      pdf.rect(400, y + 75, 100, 30).stroke();
+      pdf.rect(470, y + 55, 100, 30).stroke();
 
       // Pied de page
       pdf.fontSize(8).text('Mon entreprise - Societe ... au capital de ... euros', 30, 750);

@@ -87,6 +87,39 @@ const Dashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handleStatusChange = async (taskId, currentStatus) => {
+    try {
+      const newStatus = currentStatus === 'À_FAIRE' ? 'FAIT' : 'À_FAIRE';
+      
+      // Mettre à jour le statut dans la base de données
+      await axios.patch(`http://localhost:3001/api/tasks/${taskId}/status`, {
+        status: newStatus
+      });
+      
+      // Recharger toutes les tâches
+      let url = 'http://localhost:3001/api/tasks';
+      if (user?.role !== 'admin') {
+        url += `?employee=${user.id}`;
+      }
+      const res = await axios.get(url);
+      setTasks(res.data);
+      
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour du statut:', err);
+      // En cas d'erreur, recharger quand même les tâches
+      try {
+        let url = 'http://localhost:3001/api/tasks';
+        if (user?.role !== 'admin') {
+          url += `?employee=${user.id}`;
+        }
+        const res = await axios.get(url);
+        setTasks(res.data);
+      } catch (reloadErr) {
+        console.error('Erreur lors du rechargement des tâches:', reloadErr);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
@@ -123,7 +156,7 @@ const Dashboard = ({ user, onLogout }) => {
             </div>
             <InterventionCalendar userId={user?.id} role={user?.role} />
             <div className="mt-4">
-              <h3>Tâches</h3>
+              <h3>Tâches à faire</h3>
               {user?.role === 'admin' && (
                 <div className="mb-3">
                   <Button variant="primary" onClick={() => setShowTaskModal(true)}>
@@ -142,9 +175,16 @@ const Dashboard = ({ user, onLogout }) => {
                   {tasks.map(task => (
                     <Card key={task.id} style={{ minWidth: 250, maxWidth: 350 }}>
                       <Card.Body>
-                        <Card.Title>{task.description}</Card.Title>
+                        <div className="d-flex justify-content-between align-items-start">
+                          <Card.Title>{task.description}</Card.Title>
+                          <Form.Check
+                            type="checkbox"
+                            checked={task.status === 'FAIT'}
+                            onChange={() => handleStatusChange(task.id, task.status)}
+                            label={task.status === 'FAIT' ? 'Fait' : 'À faire'}
+                          />
+                        </div>
                         <Card.Text>
-                          <b>Statut :</b> {task.status}<br />
                           <b>Créée le :</b> {new Date(task.date_created).toLocaleString('fr-FR')}
                         </Card.Text>
                       </Card.Body>
