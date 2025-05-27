@@ -3,7 +3,7 @@ import { Card, Spinner, Alert, Container, Form, Button, Row, Col, Pagination, Mo
 import axios from 'axios';
 import Navbar from '../navbar/Navbar';
 import './InterventionList.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CreateInterventionForm from '../CreateInterventionForm';
 
 const InterventionList = () => {
@@ -25,6 +25,7 @@ const InterventionList = () => {
     status: ''
   });
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Récupérer l'utilisateur depuis le localStorage
@@ -45,6 +46,19 @@ const InterventionList = () => {
     };
     fetchInterventions();
   }, []);
+
+  // Ajout : si on arrive avec une recherche depuis un feedback, préremplir et filtrer
+  useEffect(() => {
+    if (location.state?.search) {
+      setFilters((prev) => ({ ...prev, search: location.state.search }));
+      setTimeout(() => {
+        const form = document.querySelector('form');
+        if (form) {
+          form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      }, 0);
+    }
+  }, [location.state]);
 
   const handleChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });

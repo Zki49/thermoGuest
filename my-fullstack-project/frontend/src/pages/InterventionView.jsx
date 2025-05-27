@@ -7,7 +7,7 @@ const InterventionView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { state } = useLocation();
-  const intervention = state?.intervention;
+  const [intervention, setIntervention] = useState(state?.intervention || null);
 
   const [user, setUser] = useState(null);
   const [stocks, setStocks] = useState([]);
@@ -17,14 +17,20 @@ const InterventionView = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      if (!intervention) return;
       setLoading(true);
       try {
-        const userRes = await axios.get(`http://localhost:3001/api/users/${intervention.user_id}`);
+        let interventionData = intervention;
+        if (!interventionData) {
+          // Charger l'intervention depuis l'API si elle n'est pas dans le state
+          const res = await axios.get(`http://localhost:3001/api/interventions/${id}`);
+          interventionData = res.data;
+          setIntervention(interventionData);
+        }
+        const userRes = await axios.get(`http://localhost:3001/api/users/${interventionData.user_id}`);
         setUser(userRes.data);
-        const stocksRes = await axios.get(`http://localhost:3001/api/intervention-stocks/${intervention.id}`);
+        const stocksRes = await axios.get(`http://localhost:3001/api/intervention-stocks/${interventionData.id}`);
         setStocks(stocksRes.data);
-        const feedbacksRes = await axios.get(`http://localhost:3001/api/feedbacks/intervention/${intervention.id}`);
+        const feedbacksRes = await axios.get(`http://localhost:3001/api/feedbacks/intervention/${interventionData.id}`);
         setFeedbacks(feedbacksRes.data);
       } catch (err) {
         setError("Erreur lors du chargement des détails de l'intervention");
@@ -32,12 +38,13 @@ const InterventionView = () => {
       setLoading(false);
     };
     fetchDetails();
-  }, [intervention]);
+    // eslint-disable-next-line
+  }, [id]);
 
   const handleAskQuote = async () => {
     try {
       await axios.post('http://localhost:3001/api/tasks', {
-        description: `Demande de devis pour l'intervention #${intervention.id} : ${intervention.description}`
+        description: `Demande de devis pour l'intervention #${id} : ${intervention?.description || ''}`
       });
       alert('Demande de devis envoyée !');
     } catch (err) {
