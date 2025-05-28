@@ -148,11 +148,6 @@ const Dashboard = ({ user, onLogout }) => {
               <h2 className="mb-0">
                 Interventions pour le {new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
               </h2>
-              {user?.role === 'admin' && (
-                <Button variant="primary" onClick={() => setShowTaskModal(true)}>
-                  + Créer une tâche
-                </Button>
-              )}
             </div>
             <InterventionCalendar userId={user?.id} role={user?.role} />
             <div className="mt-4">

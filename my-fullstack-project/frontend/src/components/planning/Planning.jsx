@@ -8,6 +8,7 @@ import fr from 'date-fns/locale/fr';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import axios from 'axios';
 import { Card } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const locales = {
   'fr': fr,
@@ -25,6 +26,7 @@ const Planning = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -49,6 +51,10 @@ const Planning = () => {
     fetchEvents();
   }, []);
 
+  const handleEventClick = (event) => {
+    navigate('/interventions', { state: { search: event.title } });
+  };
+
   if (loading) {
     return <div>Chargement du planning...</div>;
   }
@@ -70,6 +76,7 @@ const Planning = () => {
             startAccessor="start"
             endAccessor="end"
             style={{ height: '100%' }}
+            onSelectEvent={handleEventClick}
             messages={{
               next: 'Suivant',
               previous: 'Précédent',

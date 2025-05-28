@@ -26,6 +26,11 @@ const Facturation = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedFacture, setSelectedFacture] = useState(null);
   const navigate = useNavigate();
+  const [filter, setFilter] = useState({
+    description: '',
+    date: '',
+    status: ''
+  });
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -109,6 +114,19 @@ const Facturation = () => {
     navigate(`/editInvoice/${facture.id}`);
   };
 
+  const filteredFactures = factures.filter(facture => {
+    // Filtre description
+    const desc = facture.Intervention?.description?.toLowerCase() || '';
+    const matchDesc = filter.description === '' || desc.includes(filter.description.toLowerCase());
+    // Filtre date
+    const factureDateObj = new Date(facture.created_at);
+    const factureDateISO = factureDateObj.toISOString().slice(0, 10); // format YYYY-MM-DD
+    const matchDate = filter.date === '' || factureDateISO === filter.date;
+    // Filtre statut
+    const matchStatus = filter.status === '' || facture.status === filter.status;
+    return matchDesc && matchDate && matchStatus;
+  });
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
@@ -136,6 +154,45 @@ const Facturation = () => {
       }} />}
       <div className="container py-4">
         <h3 className="mb-4">Mes factures</h3>
+        {/* Filtres */}
+        <Form className="mb-4">
+          <Row className="g-2 align-items-end">
+            <Col md={4}>
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Rechercher par description..."
+                value={filter.description}
+                onChange={e => setFilter(f => ({ ...f, description: e.target.value }))}
+              />
+            </Col>
+            <Col md={4}>
+              <Form.Label>Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={filter.date}
+                onChange={e => setFilter(f => ({ ...f, date: e.target.value }))}
+              />
+            </Col>
+            <Col md={3}>
+              <Form.Label>Statut</Form.Label>
+              <Form.Select
+                value={filter.status}
+                onChange={e => setFilter(f => ({ ...f, status: e.target.value }))}
+              >
+                <option value="">Tous</option>
+                {Object.keys(statusLabels).map(key => (
+                  <option key={key} value={key}>{statusLabels[key].label}</option>
+                ))}
+              </Form.Select>
+            </Col>
+            <Col md={2} className="d-flex align-items-end">
+              <Button variant="outline-secondary" className="w-100" onClick={() => setFilter({ description: '', date: '', status: '' })}>
+                Réinitialiser
+              </Button>
+            </Col>
+          </Row>
+        </Form>
         <Row className="g-4">
           {/* Carte pour créer une facture */}
           <Col xs={12} md={6} lg={4} xl={3}>
@@ -149,7 +206,7 @@ const Facturation = () => {
             </Card>
           </Col>
           {/* Affichage des factures */}
-          {factures.map((facture) => {
+          {filteredFactures.map((facture) => {
             const status = getStatusProps(facture.status);
             return (
               <Col key={facture.id} xs={12} md={6} lg={4} xl={3}>
@@ -157,19 +214,26 @@ const Facturation = () => {
                   <Card.Body>
                     <div className="d-flex justify-content-between align-items-center mb-2">
                       <Badge bg={status.color} className="facture-badge"><i className={status.icon}></i> {status.label}</Badge>
-                      <Button
-                        variant="warning"
-                        size="sm"
-                        className="facture-plus-btn"
+                      <span className="ms-auto" style={{ cursor: 'pointer' }}
                         onClick={e => { e.stopPropagation(); window.open(`http://localhost:3001/api/documents/${facture.id}/pdf`, '_blank'); }}
                       >
-                        Plus <i className="bi bi-box-arrow-up-right"></i>
-                      </Button>
+                        <i className="bi bi-filetype-pdf" style={{ fontSize: 24, color: '#d32f2f' }}></i>
+                      </span>
                     </div>
                     <div className="facture-num text-muted mb-1" style={{ fontSize: 14 }}>FACT-{facture.id.toString(16).toUpperCase()}</div>
                     <div className="facture-montant mb-1" style={{ fontWeight: 700, fontSize: 32 }}>{Number(facture.amount).toFixed(2)} €</div>
-                    <div className="facture-desc text-muted" style={{ fontSize: 15 }}>{facture.description || 'Aucune description'}</div>
+                    <p>
+                        {facture.Intervention?.description || "Aucune description"}
+                    </p>
+                    
                   </Card.Body>
+                  <p>
+                      {new Date(facture.created_at).toLocaleDateString('fr-FR', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </p>
                 </Card>
               </Col>
             );

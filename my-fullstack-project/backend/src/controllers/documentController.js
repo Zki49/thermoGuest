@@ -13,7 +13,7 @@ const getAllDocuments = async (req, res) => {
       include: [
         {
           model: Intervention,
-          attributes: ['id', 'scheduled_date']
+          attributes: ['id', 'scheduled_date', 'description']
         }
       ],
       order: [['created_at', 'DESC']]
