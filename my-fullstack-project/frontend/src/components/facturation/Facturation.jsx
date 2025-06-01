@@ -31,6 +31,7 @@ const Facturation = () => {
     date: '',
     status: ''
   });
+  const [userSearch, setUserSearch] = useState('');
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -124,7 +125,19 @@ const Facturation = () => {
     const matchDate = filter.date === '' || factureDateISO === filter.date;
     // Filtre statut
     const matchStatus = filter.status === '' || facture.status === filter.status;
-    return matchDesc && matchDate && matchStatus;
+    // Filtre utilisateur
+    const user = facture.User;
+    const search = userSearch.toLowerCase();
+    const matchUser =
+      userSearch === '' ||
+      (user &&
+        (
+          (user.first_name && user.first_name.toLowerCase().includes(search)) ||
+          (user.last_name && user.last_name.toLowerCase().includes(search)) ||
+          (user.email && user.email.toLowerCase().includes(search))
+        )
+      );
+    return matchDesc && matchDate && matchStatus && matchUser;
   });
 
   if (loading) {
@@ -157,7 +170,16 @@ const Facturation = () => {
         {/* Filtres */}
         <Form className="mb-4">
           <Row className="g-2 align-items-end">
-            <Col md={4}>
+            <Col md={3}>
+              <Form.Label>Utilisateur</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Rechercher par nom, prénom ou email..."
+                value={userSearch}
+                onChange={e => setUserSearch(e.target.value)}
+              />
+            </Col>
+            <Col md={3}>
               <Form.Label>Description</Form.Label>
               <Form.Control
                 type="text"
@@ -166,7 +188,7 @@ const Facturation = () => {
                 onChange={e => setFilter(f => ({ ...f, description: e.target.value }))}
               />
             </Col>
-            <Col md={4}>
+            <Col md={3}>
               <Form.Label>Date</Form.Label>
               <Form.Control
                 type="date"
@@ -174,7 +196,7 @@ const Facturation = () => {
                 onChange={e => setFilter(f => ({ ...f, date: e.target.value }))}
               />
             </Col>
-            <Col md={3}>
+            <Col md={2}>
               <Form.Label>Statut</Form.Label>
               <Form.Select
                 value={filter.status}
@@ -187,7 +209,7 @@ const Facturation = () => {
               </Form.Select>
             </Col>
             <Col md={2} className="d-flex align-items-end">
-              <Button variant="outline-secondary" className="w-100" onClick={() => setFilter({ description: '', date: '', status: '' })}>
+              <Button variant="outline-secondary" className="w-100" onClick={() => { setFilter({ description: '', date: '', status: '' }); setUserSearch(''); }}>
                 Réinitialiser
               </Button>
             </Col>

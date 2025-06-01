@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const PDFDocument = require('pdfkit');
 const InterventionStock = require('../models/InterventionStock');
 const path = require('path');
+const User = require('../models/User');
 require('dotenv').config();
 
 // Récupérer tous les documents
@@ -14,6 +15,10 @@ const getAllDocuments = async (req, res) => {
         {
           model: Intervention,
           attributes: ['id', 'scheduled_date', 'description']
+        },
+        {
+          model: User,
+          attributes: ['id', 'first_name', 'last_name', 'email']
         }
       ],
       order: [['created_at', 'DESC']]

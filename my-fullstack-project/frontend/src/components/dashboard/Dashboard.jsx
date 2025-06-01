@@ -19,6 +19,7 @@ const Dashboard = ({ user, onLogout }) => {
   const [taskDescription, setTaskDescription] = useState('');
   const [creatingTask, setCreatingTask] = useState(false);
   const [taskError, setTaskError] = useState(null);
+  const [showAllFeedbacks, setShowAllFeedbacks] = useState(false);
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
@@ -192,7 +193,23 @@ const Dashboard = ({ user, onLogout }) => {
           <Col md={6}>
             <h2 className="mb-4">Feedbacks des utilisateurs</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <FeedbackList feedbacks={feedbacks} />
+              <FeedbackList 
+                feedbacks={showAllFeedbacks 
+                  ? [...feedbacks].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                  : [...feedbacks].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3)
+                } 
+              />
+              {feedbacks.length > 3 && (
+                <button 
+                  className="learn-more-button"
+                  onClick={() => setShowAllFeedbacks(!showAllFeedbacks)}
+                >
+                  <span className="circle">
+                    <span className="icon arrow"></span>
+                  </span>
+                  <span className="button-text">{showAllFeedbacks ? 'Voir moins' : 'Voir plus'}</span>
+                </button>
+              )}
             </div>
           </Col>
         </Row>

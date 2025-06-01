@@ -23,7 +23,6 @@ const EditInvoice = () => {
   const [availableStocks, setAvailableStocks] = useState([]);
   const [selectedStockId, setSelectedStockId] = useState('');
   const [selectedStockQty, setSelectedStockQty] = useState(1);
-  const [clientLocked, setClientLocked] = useState(false);
 
   // Récupérer l'utilisateur depuis le localStorage
   const user = JSON.parse(localStorage.getItem('user'));
@@ -44,10 +43,9 @@ const EditInvoice = () => {
         setFacture(factureRes.data);
         setClients(clientsRes.data);
         setSelectedClient(factureRes.data.user_id || '');
-        setClientLocked(!!factureRes.data.user_id);
         setStatus(factureRes.data.status || '');
-        setInvoiceDate(factureRes.data.invoice_date ? factureRes.data.invoice_date.substring(0, 10) : '');
-        setDueDate(factureRes.data.due_date ? factureRes.data.due_date.substring(0, 10) : '');
+        setInvoiceDate(factureRes.data.due_date ? factureRes.data.due_date.substring(0, 10) : '');
+        setDueDate(factureRes.data.created_at ? factureRes.data.created_at.substring(0, 10) : '');
         // Récupérer les produits du stock utilisés pour l'intervention
         let stockProducts = [];
         if (factureRes.data.intervention_id) {
@@ -119,7 +117,7 @@ const EditInvoice = () => {
         status,
         invoice_date: invoiceDate,
         due_date: dueDate,
-        created_at: invoiceDate,
+        created_at: dueDate,
         with_tva: tvaEnabled
       });
       navigate('/facturations');
@@ -209,7 +207,7 @@ const EditInvoice = () => {
               <Card.Body>
                 <Form.Group>
                   <Form.Label>Client</Form.Label>
-                  <Form.Select value={selectedClient} onChange={handleClientChange} required disabled={clientLocked}>
+                  <Form.Select value={selectedClient} onChange={handleClientChange} required>
                     <option value="">Sélectionner un client</option>
                     {clients.map(client => (
                       <option key={client.id} value={client.id}>{client.first_name} {client.last_name} ({client.email})</option>
@@ -218,11 +216,11 @@ const EditInvoice = () => {
                 </Form.Group>
                 <Form.Group className="mt-3">
                   <Form.Label>Date de la facture</Form.Label>
-                  <Form.Control type="date" value={invoiceDate} onChange={e => setInvoiceDate(e.target.value)} />
+                  <Form.Control type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
                 </Form.Group>
                 <Form.Group className="mt-3">
                   <Form.Label>Date d'échéance</Form.Label>
-                  <Form.Control type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
+                  <Form.Control type="date" value={invoiceDate} onChange={e => setInvoiceDate(e.target.value)} />
                 </Form.Group>
               </Card.Body>
             </Card>
