@@ -48,13 +48,21 @@ const Navbar = ({ user, onLogout }) => {
               Interventions
             </Nav.Link>
             <Nav.Link 
-  as={Link} 
-  to="/facturations" 
-  className={`d-flex align-items-center gap-2 ${location.pathname === '/facturations' ? 'active' : ''}`}
->
-  <i className="bi bi-receipt"></i>
-  Facturations
-</Nav.Link>
+              as={Link} 
+              to="/facturations" 
+              className={`d-flex align-items-center gap-2 ${location.pathname === '/facturations' ? 'active' : ''}`}
+            >
+              <i className="bi bi-receipt"></i>
+              Facturations
+            </Nav.Link>
+            <Nav.Link 
+              as={Link} 
+              to="/disponibilites" 
+              className={`d-flex align-items-center gap-2 ${location.pathname === '/disponibilites' ? 'active' : ''}`}
+            >
+              <i className="bi bi-clock-history"></i>
+              Disponibilités
+            </Nav.Link>
 
           </Nav>
           

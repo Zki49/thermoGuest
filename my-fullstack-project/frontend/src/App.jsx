@@ -8,6 +8,7 @@ import InterventionList from './components/intervention/InterventionList';
 import Facturation from './components/facturation/Facturation';
 import EditInvoice from './pages/EditInvoice';
 import InterventionView from './pages/InterventionView';
+import DisponibiliteGestion from './components/DisponibiliteForm/DisponibiliteGestion';
 import axios from 'axios';
 
 // Configuration d'axios
@@ -103,6 +104,10 @@ function App() {
         <Route
           path="/interventions/:id"
           element={user ? <InterventionView /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/disponibilites"
+          element={user ? <DisponibiliteGestion /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>
