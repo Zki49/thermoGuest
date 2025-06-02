@@ -6,6 +6,7 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import fr from 'date-fns/locale/fr';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import './Planning.css';
 import axios from 'axios';
 import { Card, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -96,14 +97,15 @@ const Planning = () => {
             ))}
           </Form.Select>
         </Form.Group>
-        <div style={{ height: 600 }}>
+        <div style={{ height: 600, width: '100%', minWidth: 0 }}>
           <Calendar
             localizer={localizer}
             events={events}
             startAccessor="start"
             endAccessor="end"
-            style={{ height: '100%' }}
+            style={{ height: '100%', width: '100%' }}
             onSelectEvent={handleEventClick}
+            views={['month', 'week', 'day']}
             messages={{
               next: 'Suivant',
               previous: 'Précédent',
@@ -111,7 +113,6 @@ const Planning = () => {
               month: 'Mois',
               week: 'Semaine',
               day: 'Jour',
-              agenda: 'Agenda',
               date: 'Date',
               time: 'Heure',
               event: 'Événement',
