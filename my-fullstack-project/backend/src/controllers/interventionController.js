@@ -14,7 +14,10 @@ const getAllInterventions = async (req, res) => {
       }
     }
     console.log('Fetching interventions with where clause:', where);
-    const interventions = await Intervention.findAll({ where });
+    const interventions = await Intervention.findAll({ 
+      where,
+      order: [['scheduled_date', 'DESC']]
+    });
     console.log('Found interventions:', interventions.map(i => ({
       id: i.id,
       scheduled_date: i.scheduled_date,

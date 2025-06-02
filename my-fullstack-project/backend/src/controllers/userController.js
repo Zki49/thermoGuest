@@ -2,6 +2,8 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sequelize = require('../config/database');
+const Disponibilite = require('../models/Disponibilite');
+const { Op } = require('sequelize');
 
 // Fonction pour vérifier la connexion à la base de données
 const checkDatabaseConnection = async () => {
@@ -61,6 +63,35 @@ const getAllTechnicians = async (req, res) => {
     res.json(technicians);
   } catch (error) {
     console.error('Erreur lors de la récupération des techniciens:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
+const getAvailableTechnicians = async (req, res) => {
+  try {
+    const { date } = req.query;
+    if (!date) return res.status(400).json({ message: 'Date requise' });
+
+    // Cherche les techniciens qui ont une disponibilité couvrant la date sélectionnée
+    const disponibilites = await Disponibilite.findAll({
+      where: {
+        start: { [Op.lte]: date },
+        end: { [Op.gte]: date }
+      }
+    });
+
+    const technicianIds = disponibilites.map(d => d.technician_id);
+
+    // Récupère les techniciens correspondants
+    const technicians = await User.findAll({
+      where: {
+        id: technicianIds,
+        role: 'technician'
+      }
+    });
+
+    res.json(technicians);
+  } catch (error) {
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
@@ -406,6 +437,7 @@ const verifyToken = async (req, res) => {
 };
 
 module.exports = {
+  getAvailableTechnicians,
   getAllUsers,
   getAllClients,
   getAllTechnicians,
@@ -414,5 +446,5 @@ module.exports = {
   loginAsAdmin,
   loginAsTechnician1,
   loginAsTechnician2,
-  verifyToken
+  verifyToken,
 }; 

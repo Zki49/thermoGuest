@@ -13,6 +13,7 @@ router.use((req, res, next) => {
 });
 
 // Routes pour les utilisateurs
+router.get('/users/technicians/available', userController.getAvailableTechnicians);
 router.get('/users', userController.getAllUsers);
 router.post('/users', userController.createUser);
 router.post('/login', userController.login);
@@ -21,10 +22,7 @@ router.post('/loginAsTechnician1', userController.loginAsTechnician1);
 router.post('/loginAsTechnician2', userController.loginAsTechnician2);
 router.get('/verify-token', userController.verifyToken);
 router.get('/clients', userController.getAllClients);
-
-// Route pour les techniciens (doit être avant la route avec :id)
 router.get('/users/technicians', userController.getAllTechnicians);
-
 // Récupérer un utilisateur par ID (doit être après les routes spécifiques)
 router.get('/users/:id', async (req, res) => {
   try {

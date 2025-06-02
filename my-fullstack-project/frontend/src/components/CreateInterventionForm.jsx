@@ -14,20 +14,11 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
   const [showMaterialModal, setShowMaterialModal] = useState(false);
   const [currentMaterial, setCurrentMaterial] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [date, setDate] = useState('');
 
   useEffect(() => {
-    fetchTechnicians();
     fetchMaterials();
   }, []);
-
-  const fetchTechnicians = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/api/users/technicians');
-      setTechnicians(response.data);
-    } catch (error) {
-      message.error('Erreur lors de la récupération des techniciens');
-    }
-  };
 
   const fetchMaterials = async () => {
     try {
@@ -123,21 +114,7 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
         layout="vertical"
         onFinish={handleSubmit}
       >
-        <Form.Item
-          name="technician_id"
-          label="Technicien"
-          rules={[{ required: true, message: 'Veuillez sélectionner un technicien' }]}
-        >
-          <Select placeholder="Sélectionnez un technicien">
-            {technicians.map(tech => (
-              <Select.Option key={tech.id} value={tech.id}>
-                {`${tech.first_name} ${tech.last_name}`}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-
-        <Form.Item
+      <Form.Item
           name="scheduled_date"
           label="Date prévue"
           rules={[{ required: true, message: 'Veuillez sélectionner une date' }]}
@@ -175,8 +152,35 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
               }
               return {};
             }}
+            onChange={value => {
+              form.setFieldsValue({ scheduled_date: value });
+              // On vide le technicien si la date change
+              form.setFieldsValue({ technician_id: undefined });
+              if (value) {
+                axios.get(`http://localhost:3001/api/users/technicians/available?date=${encodeURIComponent(value.toISOString())}`)
+                  .then(res => setTechnicians(res.data))
+                  .catch(() => setTechnicians([]));
+              } else {
+                setTechnicians([]);
+              }
+            }}
           />
         </Form.Item>
+        <Form.Item
+          name="technician_id"
+          label="Technicien"
+          rules={[{ required: true, message: 'Veuillez sélectionner un technicien' }]}
+        >
+          <Select placeholder="Sélectionnez un technicien" disabled={!form.getFieldValue('scheduled_date')}>
+            {technicians.map(tech => (
+              <Select.Option key={tech.id} value={tech.id}>
+                {`${tech.first_name} ${tech.last_name}`}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        
 
         <Form.Item
           name="description"
