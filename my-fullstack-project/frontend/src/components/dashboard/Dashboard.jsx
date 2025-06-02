@@ -20,6 +20,8 @@ const Dashboard = ({ user, onLogout }) => {
   const [creatingTask, setCreatingTask] = useState(false);
   const [taskError, setTaskError] = useState(null);
   const [showAllFeedbacks, setShowAllFeedbacks] = useState(false);
+  const [currentFeedbackPage, setCurrentFeedbackPage] = useState(1);
+  const feedbacksPerPage = 3;
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
@@ -121,6 +123,12 @@ const Dashboard = ({ user, onLogout }) => {
     }
   };
 
+  // Pagination feedbacks
+  const totalFeedbackPages = Math.ceil(feedbacks.length / feedbacksPerPage);
+  const paginatedFeedbacks = feedbacks
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice((currentFeedbackPage - 1) * feedbacksPerPage, currentFeedbackPage * feedbacksPerPage);
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
@@ -193,22 +201,26 @@ const Dashboard = ({ user, onLogout }) => {
           <Col md={6}>
             <h2 className="mb-4">Feedbacks des utilisateurs</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <FeedbackList 
-                feedbacks={showAllFeedbacks 
-                  ? [...feedbacks].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-                  : [...feedbacks].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3)
-                } 
-              />
-              {feedbacks.length > 3 && (
-                <button 
-                  className="learn-more-button"
-                  onClick={() => setShowAllFeedbacks(!showAllFeedbacks)}
-                >
-                  <span className="circle">
-                    <span className="icon arrow"></span>
-                  </span>
-                  <span className="button-text">{showAllFeedbacks ? 'Voir moins' : 'Voir plus'}</span>
-                </button>
+              <FeedbackList feedbacks={paginatedFeedbacks} />
+              {/* Pagination */}
+              {totalFeedbackPages > 1 && (
+                <div className="d-flex justify-content-center mt-3">
+                  <nav>
+                    <ul className="pagination">
+                      <li className={`page-item${currentFeedbackPage === 1 ? ' disabled' : ''}`}>
+                        <button className="page-link" onClick={() => setCurrentFeedbackPage(currentFeedbackPage - 1)} disabled={currentFeedbackPage === 1}>&laquo;</button>
+                      </li>
+                      {Array.from({ length: totalFeedbackPages }, (_, i) => (
+                        <li key={i + 1} className={`page-item${currentFeedbackPage === i + 1 ? ' active' : ''}`}>
+                          <button className="page-link" onClick={() => setCurrentFeedbackPage(i + 1)}>{i + 1}</button>
+                        </li>
+                      ))}
+                      <li className={`page-item${currentFeedbackPage === totalFeedbackPages ? ' disabled' : ''}`}>
+                        <button className="page-link" onClick={() => setCurrentFeedbackPage(currentFeedbackPage + 1)} disabled={currentFeedbackPage === totalFeedbackPages}>&raquo;</button>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
               )}
             </div>
           </Col>
