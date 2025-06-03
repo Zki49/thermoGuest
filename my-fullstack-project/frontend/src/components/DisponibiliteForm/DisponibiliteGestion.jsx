@@ -6,6 +6,7 @@ import Navbar from '../navbar/Navbar';
 const DisponibiliteGestion = () => {
   const [disponibilites, setDisponibilites] = useState([]);
   const [technicians, setTechnicians] = useState([]);
+  const [allTechnicians, setAllTechnicians] = useState([]);
   const [form, setForm] = useState({ technician_id: '', start: '', end: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -30,6 +31,7 @@ const DisponibiliteGestion = () => {
           axios.get('http://localhost:3001/api/disponibilites')
         ]);
         setTechnicians(techRes.data);
+        setAllTechnicians(techRes.data);
         setDisponibilites(dispoRes.data);
       } catch (err) {
         setError("Erreur lors du chargement des données");
@@ -58,7 +60,7 @@ const DisponibiliteGestion = () => {
     if (name === 'start') {
       setForm(f => ({ ...f, technician_id: '' })); // reset le technicien sélectionné
       if (value) {
-        fetchAvailableTechnicians(value);
+        //fetchAvailableTechnicians(value);
       } else {
         // Si pas de date, on recharge tous les techniciens
         axios.get('http://localhost:3001/api/users/technicians').then(res => setTechnicians(res.data));
@@ -149,7 +151,7 @@ const DisponibiliteGestion = () => {
           </thead>
           <tbody>
             {disponibilites.map(dispo => {
-              const tech = technicians.find(t => t.id === dispo.technician_id);
+              const tech = allTechnicians.find(t => t.id === dispo.technician_id);
               return (
                 <tr key={dispo.id}>
                   <td>{tech ? tech.first_name + ' ' + tech.last_name : dispo.technician_id}</td>
