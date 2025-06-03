@@ -58,9 +58,12 @@ const InterventionDetails = ({ intervention, user, stocks, loading, error, navig
 
   return (
     <Container className="py-4">
-      <Button variant="secondary" className="mb-3" onClick={() => navigate(-1)}>
-        &larr; Retour
-      </Button>
+      <i
+        className="bi bi-arrow-left-circle-fill fs-2 text-secondary mb-3"
+        style={{ cursor: 'pointer', display: 'block', width: 'fit-content' }}
+        title="Retour"
+        onClick={() => navigate(-1)}
+      ></i>
       <Card>
         <Card.Header className="fw-bold">Détail de l'intervention #{intervention.id}</Card.Header>
         <Card.Body>
@@ -107,7 +110,7 @@ const InterventionDetails = ({ intervention, user, stocks, loading, error, navig
             </ListGroup>
           )}
           <div className="d-flex gap-2">
-            <Button variant="primary" onClick={onAskQuote}>Demander un devis</Button>
+            <Button variant="primary" onClick={onAskQuote}>Demander la facture</Button>
             <Button 
               variant="success" 
               onClick={() => setShowFeedbackForm(!showFeedbackForm)}

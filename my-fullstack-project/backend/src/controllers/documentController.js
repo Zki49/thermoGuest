@@ -37,7 +37,7 @@ const getDocumentById = async (req, res) => {
       include: [
         {
           model: Intervention,
-          attributes: ['id', 'scheduled_date']
+          attributes: ['id', 'scheduled_date', 'description']
         }
       ]
     });

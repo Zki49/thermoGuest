@@ -170,10 +170,14 @@ const EditInvoice = () => {
     <>
       <Navbar user={user} onLogout={handleLogout} />
       <div className="container py-4">
+        <i
+          className="bi bi-arrow-left-circle-fill fs-2 text-secondary mb-3"
+          style={{ cursor: 'pointer', display: 'block', width: 'fit-content' }}
+          title="Retour aux factures"
+          onClick={() => navigate('/facturations')}
+        ></i>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <Button variant="danger" onClick={handleDelete} className="me-2"><i className="bi bi-trash"></i> Supprimer</Button>
-            <Button variant="success" onClick={handleSave} className="me-2"><i className="bi bi-save"></i> Sauvegarder</Button>
             <Form.Select style={{ display: 'inline-block', width: 180, verticalAlign: 'middle' }} value={status} onChange={e => setStatus(e.target.value)}>
               <option value="EN_ATTENTE">En attente</option>
               <option value="PAYÉ">Payée</option>
@@ -182,7 +186,27 @@ const EditInvoice = () => {
               <option value="IMPAYÉE">Impayée</option>
             </Form.Select>
           </div>
-          <h4>FACTURE-{id.toString().toUpperCase()}</h4>
+          <div className="text-center flex-grow-1">
+            <h4 className="mb-0">
+              {facture && facture.Intervention && facture.Intervention.description
+                ? facture.Intervention.description
+                : `FACTURE-${id.toString().toUpperCase()}`}
+            </h4>
+          </div>
+          <div>
+            <i
+              className="bi bi-floppy fs-3 text-success me-3"
+              style={{ cursor: 'pointer' }}
+              title="Sauvegarder"
+              onClick={handleSave}
+            ></i>
+            <i
+              className="bi bi-trash3 fs-3 text-danger"
+              style={{ cursor: 'pointer' }}
+              title="Supprimer"
+              onClick={handleDelete}
+            ></i>
+          </div>
         </div>
         <Row>
           <Col md={4}>

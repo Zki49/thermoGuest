@@ -44,11 +44,11 @@ const InterventionView = () => {
   const handleAskQuote = async () => {
     try {
       await axios.post('http://localhost:3001/api/tasks', {
-        description: `Demande de devis pour l'intervention #${id} : ${intervention?.description || ''}`
+        description: `Demande de facture pour l'intervention #${id} : ${intervention?.description || ''}`
       });
-      alert('Demande de devis envoyée !');
+      alert('Demande envoyée !');
     } catch (err) {
-      alert("Erreur lors de la demande de devis");
+      alert("Erreur lors de la demande ");
     }
   };
 

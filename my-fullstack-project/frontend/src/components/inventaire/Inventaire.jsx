@@ -24,6 +24,7 @@ const Inventaire = () => {
     quantity_min: '',
     unit_price: ''
   });
+  const [showLowStock, setShowLowStock] = useState(false);
 
   // Fonction de debounce pour le terme de recherche
   useEffect(() => {
@@ -69,6 +70,28 @@ const Inventaire = () => {
     setFilteredStocks(filtered);
     setCurrentPage(1); // Réinitialiser la page courante lors du filtrage
   }, [debouncedSearchTerm, stocks]);
+
+  // Calcul des stocks à afficher selon le filtre low stock
+  const displayedStocks = showLowStock
+    ? filteredStocks.filter(stock => Number(stock.quantity) < Number(stock.quantity_min))
+    : filteredStocks;
+
+  // Calculer les éléments pour la page courante
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = displayedStocks.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(displayedStocks.length / itemsPerPage);
+
+  // Gérer le changement de page
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Générer les numéros de page
+  const pageNumbers = [];
+  for (let number = 1; number <= totalPages; number++) {
+    pageNumbers.push(number);
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -151,23 +174,6 @@ const Inventaire = () => {
     }
   };
 
-  // Calculer les éléments pour la page courante
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredStocks.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredStocks.length / itemsPerPage);
-
-  // Gérer le changement de page
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  // Générer les numéros de page
-  const pageNumbers = [];
-  for (let number = 1; number <= totalPages; number++) {
-    pageNumbers.push(number);
-  }
-
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
@@ -193,14 +199,12 @@ const Inventaire = () => {
         <Card>
           <Card.Header className="bg-primary text-white d-flex justify-content-between align-items-center">
             <h2 className="mb-0">Inventaire</h2>
-            <Button 
-              variant="light" 
+            <i 
+              className="bi bi-plus-circle-fill fs-2 text-light" 
+              style={{ cursor: 'pointer' }} 
+              title="Nouvel élément"
               onClick={handleCreate}
-              className="d-flex align-items-center gap-2"
-            >
-              <i className="bi bi-plus-lg"></i>
-              Nouvel élément
-            </Button>
+            ></i>
           </Card.Header>
           <Card.Body>
             <InputGroup className="mb-4">
@@ -214,6 +218,14 @@ const Inventaire = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </InputGroup>
+            <Form.Check
+              type="switch"
+              id="low-stock-switch"
+              label="Afficher uniquement les articles sous le stock minimal"
+              className="mb-3"
+              checked={showLowStock}
+              onChange={() => setShowLowStock(v => !v)}
+            />
 
             <Table striped bordered hover responsive>
               <thead>
