@@ -29,6 +29,10 @@ const Document = sequelize.define('Document', {
     type: DataTypes.ENUM('DEVIS', 'FACTURE'),
     allowNull: false
   },
+  due_date: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
   invoice_date: {
     type: DataTypes.DATE,
     allowNull: true

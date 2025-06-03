@@ -81,7 +81,7 @@ const createDocument = async (req, res) => {
 const updateDocument = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, amount, with_tva, products, client_id } = req.body;
+    const { status, amount, with_tva, products, client_id, invoice_date, due_date, created_at } = req.body;
 
     const document = await Document.findByPk(id);
     if (!document) {
@@ -93,6 +93,9 @@ const updateDocument = async (req, res) => {
     if (amount) document.amount = amount;
     if (typeof with_tva !== 'undefined') document.with_tva = with_tva;
     if (client_id) document.user_id = client_id;
+    if (invoice_date) document.invoice_date = invoice_date;
+    if (due_date) document.due_date = due_date;
+    if (created_at) document.created_at = created_at;
 
     // Synchronisation des produits dans intervention_stocks
     if (products && document.intervention_id) {
@@ -249,7 +252,7 @@ const generatePdf = async (req, res) => {
       // Modalités et signature
       pdf.rect(30, y + 30, 250, 60).stroke();
       pdf.text('Modalités et conditions de règlement :', 35, y + 35);
-      pdf.text('Date echeance : ' + (doc.due_date ? new Date(doc.due_date).toLocaleDateString() : '.../.../...'), 35, y + 55);
+      pdf.text('Date echeance : ' + (doc.invoice_date ? new Date(doc.invoice_date).toLocaleDateString() : '.../.../...'), 35, y + 55);
       pdf.text('Signature :', 400, y + 60);
       pdf.rect(470, y + 55, 100, 30).stroke();
 

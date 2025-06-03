@@ -27,7 +27,7 @@ const Facturation = () => {
   const [selectedFacture, setSelectedFacture] = useState(null);
   const navigate = useNavigate();
   const [filter, setFilter] = useState({
-    description: '',
+    ref: '',
     date: '',
     status: ''
   });
@@ -116,9 +116,8 @@ const Facturation = () => {
   };
 
   const filteredFactures = factures.filter(facture => {
-    // Filtre description
-    const desc = facture.Intervention?.description?.toLowerCase() || '';
-    const matchDesc = filter.description === '' || desc.includes(filter.description.toLowerCase());
+    // Filtre référence
+    const matchRef = !filter.ref || facture.id.toString() === filter.ref;
     // Filtre date
     const factureDateObj = new Date(facture.created_at);
     const factureDateISO = factureDateObj.toISOString().slice(0, 10); // format YYYY-MM-DD
@@ -137,7 +136,7 @@ const Facturation = () => {
           (user.email && user.email.toLowerCase().includes(search))
         )
       );
-    return matchDesc && matchDate && matchStatus && matchUser;
+    return matchRef && matchDate && matchStatus && matchUser;
   });
 
   if (loading) {
@@ -180,12 +179,12 @@ const Facturation = () => {
               />
             </Col>
             <Col md={3}>
-              <Form.Label>Description</Form.Label>
+              <Form.Label>Référence</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Rechercher par description..."
-                value={filter.description}
-                onChange={e => setFilter(f => ({ ...f, description: e.target.value }))}
+                type="number"
+                placeholder="Rechercher par référence..."
+                value={filter.ref || ''}
+                onChange={e => setFilter(f => ({ ...f, ref: e.target.value }))}
               />
             </Col>
             <Col md={3}>
@@ -209,7 +208,7 @@ const Facturation = () => {
               </Form.Select>
             </Col>
             <Col md={2} className="d-flex align-items-end">
-              <Button variant="outline-secondary" className="w-100" onClick={() => { setFilter({ description: '', date: '', status: '' }); setUserSearch(''); }}>
+              <Button variant="outline-secondary" className="w-100" onClick={() => { setFilter({ ref: '', date: '', status: '' }); setUserSearch(''); }}>
                 Réinitialiser
               </Button>
             </Col>
@@ -242,7 +241,7 @@ const Facturation = () => {
                         <i className="bi bi-filetype-pdf" style={{ fontSize: 24, color: '#d32f2f' }}></i>
                       </span>
                     </div>
-                    <div className="facture-num text-muted mb-1" style={{ fontSize: 14 }}>FACT-{facture.id.toString(16).toUpperCase()}</div>
+                    <div className="facture-ref text-muted mb-1" style={{ fontSize: 14 }}>Ref: {facture.id}</div>
                     <div className="facture-montant mb-1" style={{ fontWeight: 700, fontSize: 32 }}>{Number(facture.amount).toFixed(2)} €</div>
                     <p>
                         {facture.Intervention?.description || "Aucune description"}

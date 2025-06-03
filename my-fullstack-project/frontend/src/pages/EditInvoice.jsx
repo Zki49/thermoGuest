@@ -23,6 +23,7 @@ const EditInvoice = () => {
   const [availableStocks, setAvailableStocks] = useState([]);
   const [selectedStockId, setSelectedStockId] = useState('');
   const [selectedStockQty, setSelectedStockQty] = useState(1);
+  const [createdAt, setCreatedAt] = useState('');
 
   // Récupérer l'utilisateur depuis le localStorage
   const user = JSON.parse(localStorage.getItem('user'));
@@ -44,8 +45,9 @@ const EditInvoice = () => {
         setClients(clientsRes.data);
         setSelectedClient(factureRes.data.user_id || '');
         setStatus(factureRes.data.status || '');
-        setInvoiceDate(factureRes.data.due_date ? factureRes.data.due_date.substring(0, 10) : '');
-        setDueDate(factureRes.data.created_at ? factureRes.data.created_at.substring(0, 10) : '');
+        setInvoiceDate(factureRes.data.invoice_date ? factureRes.data.invoice_date.substring(0, 10) : '');
+        setDueDate(factureRes.data.due_date ? factureRes.data.due_date.substring(0, 10) : '');
+        setCreatedAt(factureRes.data.created_at ? factureRes.data.created_at.substring(0, 10) : '');
         // Récupérer les produits du stock utilisés pour l'intervention
         let stockProducts = [];
         if (factureRes.data.intervention_id) {
@@ -117,7 +119,7 @@ const EditInvoice = () => {
         status,
         invoice_date: invoiceDate,
         due_date: dueDate,
-        created_at: dueDate,
+        created_at: createdAt,
         with_tva: tvaEnabled
       });
       navigate('/facturations');
