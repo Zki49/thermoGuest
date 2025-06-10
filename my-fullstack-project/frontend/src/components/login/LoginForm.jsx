@@ -103,23 +103,23 @@ const LoginForm = ({ onLogin }) => {
     }
   };
 
-  const handleTechnician2Login = async () => {
+  const handleClient1Login = async () => {
     setLoading(true);
     setError(null);
     setResponse(null);
     
     try {
-      const response = await axios.post('http://localhost:3001/api/loginAsTechnician2');
+      const response = await axios.post('http://localhost:3001/api/loginAsClient1');
       
       if (response.data.success) {
         setResponse(response.data);
         onLogin(response.data);
       } else {
-        setError(response.data.message || 'Erreur de connexion technicien 2');
+        setError(response.data.message || 'Erreur de connexion client1@example.com');
       }
     } catch (err) {
-      console.error('Erreur lors de la connexion technicien 2:', err);
-      setError(err.response?.data?.message || 'Erreur lors de la connexion technicien 2');
+      console.error('Erreur lors de la connexion client1@example.com:', err);
+      setError(err.response?.data?.message || 'Erreur lors de la connexion client1@example.com');
     } finally {
       setLoading(false);
     }
@@ -210,23 +210,18 @@ const LoginForm = ({ onLogin }) => {
                   onClick={handleTechnician1Login}
                   disabled={loading}
                 >
-                  {loading ? 'Connexion...' : 'Se connecter en tant que Technicien 1'}
+                  {loading ? 'Connexion...' : 'Se connecter en tant que Technicien '}
                 </button>
                 <button
                   type="button"
                   className="btn btn-outline-secondary w-100"
-                  onClick={handleTechnician2Login}
+                  onClick={handleClient1Login}
                   disabled={loading}
                 >
-                  {loading ? 'Connexion...' : 'Se connecter en tant que Technicien 2'}
+                  {loading ? 'Connexion...' : 'Se connecter en tant que Client (client1@example.com)'}
                 </button>
               </div>
             </form>
-
-            <div className="text-center mt-3">
-              <span className="text-muted">New User? </span>
-              <a href="#" className="text-decoration-none">Signup</a>
-            </div>
           </div>
         </div>
       </div>

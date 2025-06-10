@@ -20,6 +20,7 @@ router.post('/login', userController.login);
 router.post('/loginAsAdmin', userController.loginAsAdmin);
 router.post('/loginAsTechnician1', userController.loginAsTechnician1);
 router.post('/loginAsTechnician2', userController.loginAsTechnician2);
+router.post('/loginAsClient1', userController.loginAsClient1);
 router.get('/verify-token', userController.verifyToken);
 router.get('/clients', userController.getAllClients);
 router.get('/users/technicians', userController.getAllTechnicians);

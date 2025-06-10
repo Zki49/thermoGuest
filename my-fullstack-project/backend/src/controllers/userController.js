@@ -386,6 +386,61 @@ const loginAsTechnician2 = async (req, res) => {
   }
 };
 
+// Connexion en tant que client1@example.com
+const loginAsClient1 = async (req, res) => {
+  if (!await checkDatabaseConnection()) {
+    return res.status(503).json({ 
+      success: false,
+      message: 'Service temporairement indisponible' 
+    });
+  }
+
+  try {
+    // Rechercher le client1 dans la base de données
+    const client = await User.findOne({ where: { email: 'client1@example.com' } });
+    
+    if (!client) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Compte client1@example.com non trouvé' 
+      });
+    }
+
+    // Générer un token JWT
+    const token = jwt.sign(
+      { 
+        id: client.id, 
+        email: client.email,
+        role: client.role
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.json({
+      success: true,
+      message: 'Connexion en tant que client1@example.com réussie',
+      token,
+      user: {
+        id: client.id,
+        email: client.email,
+        first_name: client.first_name,
+        last_name: client.last_name,
+        role: client.role,
+        created_at: client.created_at,
+        updated_at: client.updated_at
+      }
+    });
+  } catch (error) {
+    console.error('Erreur lors de la connexion en tant que client1@example.com:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message 
+    });
+  }
+};
+
 // Vérification du token
 const verifyToken = async (req, res) => {
   if (!await checkDatabaseConnection()) {
@@ -446,5 +501,6 @@ module.exports = {
   loginAsAdmin,
   loginAsTechnician1,
   loginAsTechnician2,
+  loginAsClient1,
   verifyToken,
 }; 

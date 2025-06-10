@@ -191,10 +191,26 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
         </Form.Item>
 
         <div className="mb-3">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <h5>Matériaux</h5>
-            <Button type="primary" onClick={() => setShowMaterialModal(true)}>
-              + Ajouter un matériau
+          <div className="d-flex align-items-center mb-2" style={{ position: 'relative' }}>
+            <h5 className="mb-0">Matériaux</h5>
+            <Button
+              type="primary"
+              onClick={() => setShowMaterialModal(true)}
+              style={{
+                position: 'absolute',
+                right: 0,
+                top: '50%',
+                transform: 'translateY(-50%)',
+                borderRadius: '50%',
+                width: 40,
+                height: 40,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0
+              }}
+            >
+              <i className="bi bi-plus" style={{ fontSize: 22 }}></i>
             </Button>
           </div>
           <Table
