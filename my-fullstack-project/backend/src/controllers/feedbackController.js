@@ -3,6 +3,7 @@ const User = require('../models/User');
 
 // Récupérer tous les feedbacks avec le nom du client
 exports.getAllFeedbacks = async (req, res) => {
+  console.log(req.user);
   try {
     const feedbacks = await Feedback.findAll({
       include: [{

@@ -3,9 +3,12 @@ const express = require('express');
 const cors = require('cors');
 const sequelize = require('./config/database');
 const mainRoutes = require('./routes');
+const logUser = require('./middleware/logUser');
+
 
 const app = express();
 
+app.use(logUser);
 // Middleware
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -15,6 +18,9 @@ app.use(express.json());
 
 // Utilisation du routeur principal
 app.use('/api', mainRoutes);
+
+// Middleware pour logger l'utilisateur connecté
+
 
 // Gestion des erreurs
 app.use((err, req, res, next) => {

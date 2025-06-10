@@ -26,7 +26,11 @@ const Dashboard = ({ user, onLogout }) => {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/feedbacks');
+        let url = 'http://localhost:3001/api/feedbacks';
+        if (user?.role === 'user') {
+          url += `?user_id=${user.id}`;
+        }
+        const response = await axios.get(url);
         setFeedbacks(response.data);
         setLoading(false);
       } catch (err) {
@@ -34,8 +38,8 @@ const Dashboard = ({ user, onLogout }) => {
         setLoading(false);
       }
     };
-    fetchFeedbacks();
-  }, []);
+    if (user?.id) fetchFeedbacks();
+  }, [user]);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -160,6 +164,8 @@ const Dashboard = ({ user, onLogout }) => {
             </div>
             <InterventionCalendar userId={user?.id} role={user?.role} />
             <div className="mt-4">
+            {user?.role !== 'user' && (
+                <>
               <h3>Tâches à faire</h3>
               {user?.role === 'admin' && (
                 <div className="mb-3">
@@ -168,38 +174,41 @@ const Dashboard = ({ user, onLogout }) => {
                   </Button>
                 </div>
               )}
-              {loadingTasks ? (
-                <Spinner animation="border" />
-              ) : errorTasks ? (
-                <Alert variant="danger">{errorTasks}</Alert>
-              ) : tasks.length === 0 ? (
-                <Alert variant="info">Aucune tâche à afficher.</Alert>
-              ) : (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
-                  {tasks.map(task => (
-                    <Card key={task.id} style={{ minWidth: 250, maxWidth: 350 }}>
-                      <Card.Body>
-                        <div className="d-flex justify-content-between align-items-start">
-                          <Card.Title>{task.description}</Card.Title>
-                          <Form.Check
-                            type="checkbox"
-                            checked={task.status === 'FAIT'}
-                            onChange={() => handleStatusChange(task.id, task.status)}
-                            label={task.status === 'FAIT' ? 'Fait' : 'À faire'}
-                          />
-                        </div>
-                        <Card.Text>
-                          <b>Créée le :</b> {new Date(task.date_created).toLocaleString('fr-FR')}
-                        </Card.Text>
-                      </Card.Body>
-                    </Card>
-                  ))}
-                </div>
+             
+                  {loadingTasks ? (
+                    <Spinner animation="border" />
+                  ) : errorTasks ? (
+                    <Alert variant="danger">{errorTasks}</Alert>
+                  ) : tasks.length === 0 ? (
+                    <Alert variant="info">Aucune tâche à afficher.</Alert>
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+                      {tasks.map(task => (
+                        <Card key={task.id} style={{ minWidth: 250, maxWidth: 350 }}>
+                          <Card.Body>
+                            <div className="d-flex justify-content-between align-items-start">
+                              <Card.Title>{task.description}</Card.Title>
+                              <Form.Check
+                                type="checkbox"
+                                checked={task.status === 'FAIT'}
+                                onChange={() => handleStatusChange(task.id, task.status)}
+                                label={task.status === 'FAIT' ? 'Fait' : 'À faire'}
+                              />
+                            </div>
+                            <Card.Text>
+                              <b>Créée le :</b> {new Date(task.date_created).toLocaleString('fr-FR')}
+                            </Card.Text>
+                          </Card.Body>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </Col>
           <Col md={6}>
-            <h2 className="mb-4">Feedbacks des utilisateurs</h2>
+            <h2 className="mb-4">Feedbacks</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <FeedbackList feedbacks={paginatedFeedbacks} />
               {/* Pagination */}
