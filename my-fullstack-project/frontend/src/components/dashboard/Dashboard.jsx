@@ -56,7 +56,7 @@ const Dashboard = ({ user, onLogout }) => {
         setLoadingTasks(false);
       }
     };
-    if (user?.id) fetchTasks();
+    if (user?.id && user?.role !== 'user') fetchTasks();
   }, [user]);
 
   useEffect(() => {

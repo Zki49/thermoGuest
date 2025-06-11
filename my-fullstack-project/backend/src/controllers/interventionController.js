@@ -6,27 +6,19 @@ const sequelize = require('../config/database');
 
 const getAllInterventions = async (req, res) => {
   try {
-    const { user_id, role } = req.query;
+    const user = req.user;
     let where = {};
-    if (!(role && role === 'admin')) {
-      if (user_id) {
-        where.user_id = user_id;
-      }
+    if (user && user.role === 'technician') {
+      where.user_id = user.id;
+    } else if (user && user.role === 'user') {
+      where.client_id = user.id;
     }
-    console.log('Fetching interventions with where clause:', where);
     const interventions = await Intervention.findAll({ 
       where,
       order: [['scheduled_date', 'DESC']]
     });
-    console.log('Found interventions:', interventions.map(i => ({
-      id: i.id,
-      scheduled_date: i.scheduled_date,
-      status: i.status,
-      description: i.description
-    })));
     res.json(interventions);
   } catch (error) {
-    console.error('Erreur lors de la récupération des interventions:', error);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };
@@ -70,9 +62,14 @@ const getTodayInterventions = async (req, res) => {
 const createIntervention = async (req, res) => {
   const t = await sequelize.transaction();
   try {
-    const { materials, ...interventionData } = req.body;
-    // Créer l'intervention
-    const intervention = await Intervention.create(interventionData, { transaction: t });
+    const { materials, client_id, ...interventionData } = req.body;
+    // Afficher l'objet intervention juste avant l'insert
+    console.log('*** Intervention à insérer :', { ...interventionData, client_id });
+    // Créer l'intervention avec le client_id
+    const intervention = await Intervention.create(
+      { ...interventionData, client_id },
+      { transaction: t }
+    );
 
     // Pour chaque matériau, insérer dans intervention_stocks et mettre à jour le stock
     if (Array.isArray(materials)) {

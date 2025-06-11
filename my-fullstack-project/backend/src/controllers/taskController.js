@@ -22,12 +22,12 @@ exports.createTask = async (req, res) => {
 
 exports.getTasks = async (req, res) => {
   try {
-    const { employee } = req.query;
+    const user = req.user;
     let where = {
-      status: 'À_FAIRE'  // Filtrer uniquement les tâches à faire
+      status: 'À_FAIRE'
     };
-    if (employee) {
-      where.employee = employee;
+    if (user && user.role !== 'admin') {
+      where.employee = user.id;
     }
     const tasks = await Task.findAll({ 
       where, 

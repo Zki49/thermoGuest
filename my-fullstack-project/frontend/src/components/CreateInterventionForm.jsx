@@ -15,9 +15,14 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
   const [currentMaterial, setCurrentMaterial] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [date, setDate] = useState('');
+  const [clients, setClients] = useState([]);
 
   useEffect(() => {
     fetchMaterials();
+    // Récupérer la liste des clients
+    axios.get('http://localhost:3001/api/users/clients')
+      .then(res => setClients(res.data))
+      .catch(() => setClients([]));
   }, []);
 
   const fetchMaterials = async () => {
@@ -80,6 +85,7 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
       const formattedValues = {
         ...values,
         user_id: values.technician_id,
+        client_id: values.client_id,
         status: 'PLANIFIÉ',
         scheduled_date: values.scheduled_date.toISOString(),
         materials: selectedMaterials.map(material => ({
@@ -179,9 +185,19 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
             ))}
           </Select>
         </Form.Item>
-
-        
-
+        <Form.Item
+          name="client_id"
+          label="Client"
+          rules={[{ required: true, message: 'Veuillez sélectionner un client' }]}
+        >
+          <Select placeholder="Sélectionnez un client">
+            {clients.map(client => (
+              <Select.Option key={client.id} value={client.id}>
+                {client.first_name} {client.last_name} ({client.email})
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
         <Form.Item
           name="description"
           label="Description"

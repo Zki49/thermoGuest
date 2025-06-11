@@ -30,6 +30,10 @@ const Intervention = sequelize.define('Intervention', {
   description: {
     type: DataTypes.TEXT,
     allowNull: false
+  },
+  client_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false, 
   }
 }, {
   timestamps: true,

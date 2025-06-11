@@ -23,7 +23,7 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-const Planning = () => {
+const Planning = ({ user }) => {
   const [events, setEvents] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [technicians, setTechnicians] = useState([]);
@@ -39,14 +39,22 @@ const Planning = () => {
           axios.get('http://localhost:3001/api/interventions'),
           axios.get('http://localhost:3001/api/users/technicians')
         ]);
-        const events = interRes.data.map(intervention => ({
+        let events = interRes.data.map(intervention => ({
           id: intervention.id,
           title: intervention.description,
           start: new Date(intervention.scheduled_date),
-          end: new Date(new Date(intervention.scheduled_date).getTime() + 60 * 60 * 1000), // +1 heure
+          end: new Date(new Date(intervention.scheduled_date).getTime() + 60 * 60 * 1000),
           status: intervention.status,
           user_id: intervention.user_id
         }));
+        let currentUser = user;
+        if (!currentUser) {
+          const userData = localStorage.getItem('user');
+          if (userData) currentUser = JSON.parse(userData);
+        }
+        if (currentUser && currentUser.role === 'technician') {
+          events = events.filter(ev => String(ev.user_id) === String(currentUser.id));
+        }
         setAllEvents(events);
         setEvents(events);
         setTechnicians(techRes.data);
@@ -58,7 +66,7 @@ const Planning = () => {
       }
     };
     fetchAll();
-  }, []);
+  }, [user]);
 
   const handleTechnicianChange = (e) => {
     const value = e.target.value;
@@ -88,15 +96,20 @@ const Planning = () => {
         <h2 className="mb-0">Planning</h2>
       </Card.Header>
       <Card.Body>
-        <Form.Group className="mb-3" controlId="technicianSelect">
-          <Form.Label>Filtrer par technicien</Form.Label>
-          <Form.Select value={selectedTechnician} onChange={handleTechnicianChange}>
-            <option value="">Tous les techniciens</option>
-            {technicians.map(tech => (
-              <option key={tech.id} value={tech.id}>{tech.first_name} {tech.last_name}</option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+        {/* Afficher le filtre seulement si ce n'est pas un technicien */}
+        {user ? (
+          user.role !== 'technician' && (
+            <Form.Group className="mb-3" controlId="technicianSelect">
+              <Form.Label>Filtrer par technicien</Form.Label>
+              <Form.Select value={selectedTechnician} onChange={handleTechnicianChange}>
+                <option value="">Tous les techniciens</option>
+                {technicians.map(tech => (
+                  <option key={tech.id} value={tech.id}>{tech.first_name} {tech.last_name}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          )
+        ) : null}
         <div style={{ height: 600, width: '100%', minWidth: 0 }}>
           <Calendar
             localizer={localizer}

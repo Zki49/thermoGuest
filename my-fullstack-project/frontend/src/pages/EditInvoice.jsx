@@ -39,7 +39,7 @@ const EditInvoice = () => {
       try {
         const [factureRes, clientsRes] = await Promise.all([
           axios.get(`http://localhost:3001/api/documents/${id}`),
-          axios.get('http://localhost:3001/api/clients')
+          axios.get('http://localhost:3001/api/users/clients')
         ]);
         setFacture(factureRes.data);
         setClients(clientsRes.data);

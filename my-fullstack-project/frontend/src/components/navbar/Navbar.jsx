@@ -23,47 +23,54 @@ const Navbar = ({ user, onLogout }) => {
               <i className="bi bi-house"></i>
               Accueil
             </Nav.Link>
-            <Nav.Link 
-              as={Link} 
-              to="/inventaire" 
-              className={`d-flex align-items-center gap-2 ${location.pathname === '/inventaire' ? 'active' : ''}`}
-            >
-              <i className="bi bi-box-seam"></i>
-              Inventaire
-            </Nav.Link>
-            <Nav.Link 
-              as={Link} 
-              to="/planning" 
-              className={`d-flex align-items-center gap-2 ${location.pathname === '/planning' ? 'active' : ''}`}
-            >
-              <i className="bi bi-calendar3"></i>
-              Planning
-            </Nav.Link>
+            {user.role !== 'user' && (
+              <>
+                <Nav.Link 
+                  as={Link} 
+                  to="/inventaire" 
+                  className={`d-flex align-items-center gap-2 ${location.pathname === '/inventaire' ? 'active' : ''}`}
+                >
+                  <i className="bi bi-box-seam"></i>
+                  Inventaire
+                </Nav.Link>
+                <Nav.Link 
+                  as={Link} 
+                  to="/planning" 
+                  className={`d-flex align-items-center gap-2 ${location.pathname === '/planning' ? 'active' : ''}`}
+                >
+                  <i className="bi bi-calendar2-week"></i>
+                  Planning
+                </Nav.Link>
+                {user.role !== 'technician' && (
+                  <Nav.Link 
+                    as={Link} 
+                    to="/disponibilites" 
+                    className={`d-flex align-items-center gap-2 ${location.pathname === '/disponibilites' ? 'active' : ''}`}
+                  >
+                    <i className="bi bi-clock-history"></i>
+                    Disponibilités
+                  </Nav.Link>
+                )}
+              </>
+            )}
             <Nav.Link 
               as={Link} 
               to="/interventions" 
               className={`d-flex align-items-center gap-2 ${location.pathname === '/interventions' ? 'active' : ''}`}
             >
-              <i className="bi bi-calendar-check"></i>
+              <i className="bi bi-clipboard-check"></i>
               Interventions
             </Nav.Link>
-            <Nav.Link 
-              as={Link} 
-              to="/facturations" 
-              className={`d-flex align-items-center gap-2 ${location.pathname === '/facturations' ? 'active' : ''}`}
-            >
-              <i className="bi bi-receipt"></i>
-              Facturations
-            </Nav.Link>
-            <Nav.Link 
-              as={Link} 
-              to="/disponibilites" 
-              className={`d-flex align-items-center gap-2 ${location.pathname === '/disponibilites' ? 'active' : ''}`}
-            >
-              <i className="bi bi-clock-history"></i>
-              Disponibilités
-            </Nav.Link>
-
+            {user.role !== 'technician' && (
+              <Nav.Link 
+                as={Link} 
+                to="/facturation" 
+                className={`d-flex align-items-center gap-2 ${location.pathname === '/facturation' ? 'active' : ''}`}
+              >
+                <i className="bi bi-journal-text"></i>
+                Facturations
+              </Nav.Link>
+            )}
           </Nav>
           
           <div>

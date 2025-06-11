@@ -207,14 +207,16 @@ const InterventionList = () => {
 
         <Row className="mb-4">
           <Col className="d-flex justify-content-end">
-            <Button 
-              variant="primary" 
-              onClick={() => setShowCreateModal(true)}
-              className="d-flex align-items-center gap-2 btn-create-intervention"
-            >
-              <i className="bi bi-plus-circle"></i>
-              Nouvelle intervention
-            </Button>
+            {user && user.role !== 'user' && (
+              <Button 
+                variant="primary" 
+                onClick={() => setShowCreateModal(true)}
+                className="d-flex align-items-center gap-2 btn-create-intervention"
+              >
+                <i className="bi bi-plus-circle"></i>
+                Nouvelle intervention
+              </Button>
+            )}
           </Col>
         </Row>
 
@@ -230,15 +232,17 @@ const InterventionList = () => {
                     <strong>Statut :</strong> {intervention.status}
                   </Card.Text>
                 </div>
-                <div className="d-flex justify-content-end" style={{ minWidth: 120 }}>
-                  <Button 
-                    variant="danger" 
-                    size="sm"
-                    onClick={(e) => handleDeleteClick(intervention, e)}
-                  >
-                    <i className="bi bi-trash"></i> Supprimer
-                  </Button>
-                </div>
+                {user && user.role !== 'user' && (
+                  <div className="d-flex justify-content-end" style={{ minWidth: 120 }}>
+                    <Button 
+                      variant="danger" 
+                      size="sm"
+                      onClick={(e) => handleDeleteClick(intervention, e)}
+                    >
+                      <i className="bi bi-trash"></i> Supprimer
+                    </Button>
+                  </div>
+                )}
               </div>
             </Card.Body>
           </Card>

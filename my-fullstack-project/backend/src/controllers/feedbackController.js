@@ -5,7 +5,12 @@ const User = require('../models/User');
 exports.getAllFeedbacks = async (req, res) => {
   console.log(req.user);
   try {
+    let where = {};
+    if (req.user && req.user.role === 'user') {
+      where.client_id = req.user.id;
+    }
     const feedbacks = await Feedback.findAll({
+      where,
       include: [{
         model: User,
         as: 'client',

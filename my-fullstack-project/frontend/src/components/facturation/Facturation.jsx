@@ -216,22 +216,28 @@ const Facturation = () => {
         </Form>
         <Row className="g-4">
           {/* Carte pour créer une facture */}
-          <Col xs={12} md={6} lg={4} xl={3}>
-            <Card className="facture-card create-card h-100 d-flex align-items-center justify-content-center text-center">
-              <Card.Body>
-                <Button variant="link" className="p-0 text-decoration-none" style={{ color: '#f59e0b' }} onClick={handleCreateClick}>
-                  <div style={{ fontSize: 32, marginBottom: 8 }}><i className="bi bi-layers"></i></div>
-                  <div style={{ fontWeight: 600, fontSize: 20 }}>Créer une facture</div>
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
+          {user && user.role !== 'user' && (
+            <Col xs={12} md={6} lg={4} xl={3}>
+              <Card className="facture-card create-card h-100 d-flex align-items-center justify-content-center text-center">
+                <Card.Body>
+                  <Button variant="link" className="p-0 text-decoration-none" style={{ color: '#f59e0b' }} onClick={handleCreateClick}>
+                    <div style={{ fontSize: 32, marginBottom: 8 }}><i className="bi bi-layers"></i></div>
+                    <div style={{ fontWeight: 600, fontSize: 20 }}>Créer une facture</div>
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          )}
           {/* Affichage des factures */}
           {filteredFactures.map((facture) => {
             const status = getStatusProps(facture.status);
             return (
               <Col key={facture.id} xs={12} md={6} lg={4} xl={3}>
-                <Card className="facture-card h-100" onClick={() => handleEditClick(facture)} style={{ cursor: 'pointer' }}>
+                <Card
+                  className="facture-card h-100"
+                  onClick={user && user.role !== 'user' ? () => handleEditClick(facture) : undefined}
+                  style={{ cursor: user && user.role !== 'user' ? 'pointer' : 'default' }}
+                >
                   <Card.Body>
                     <div className="d-flex justify-content-between align-items-center mb-2">
                       <Badge bg={status.color} className="facture-badge"><i className={status.icon}></i> {status.label}</Badge>

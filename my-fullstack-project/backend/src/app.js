@@ -9,6 +9,8 @@ const logUser = require('./middleware/logUser');
 const app = express();
 
 app.use(logUser);
+
+
 // Middleware
 app.use(cors({
   origin: 'http://localhost:3000',

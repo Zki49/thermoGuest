@@ -10,7 +10,18 @@ require('dotenv').config();
 // Récupérer tous les documents
 const getAllDocuments = async (req, res) => {
   try {
+    const user = req.user;
+    let where = {};
+    if (user && user.role === 'user') {
+      where = {
+        type: 'FACTURE',
+        user_id: user.id,
+        invoice_date: { [Op.ne]: null },
+        due_date: { [Op.ne]: null }
+      };
+    }
     const documents = await Document.findAll({
+      where,
       include: [
         {
           model: Intervention,
