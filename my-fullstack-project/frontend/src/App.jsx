@@ -83,11 +83,11 @@ function App() {
         />
         <Route 
           path="/inventaire" 
-          element={user ? <Inventaire /> : <Navigate to="/login" />} 
+          element={user && user.role !== 'user' ? <Inventaire /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/planning" 
-          element={user ? <PlanningPage /> : <Navigate to="/login" />} 
+          element={user && user.role !== 'user' ? <PlanningPage /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/interventions" 
@@ -95,11 +95,11 @@ function App() {
         />
         <Route
           path="/facturations"
-          element={user ? <Facturation /> : <Navigate to="/login" />}
+          element={user && user.role !== 'technician' ? <Facturation /> : <Navigate to="/login" />}
         />
         <Route
           path="/editInvoice/:id"
-          element={user ? <EditInvoice /> : <Navigate to="/login" />}
+          element={user  && user.role === 'admin' ? <EditInvoice /> : <Navigate to="/login" />}
         />
         <Route
           path="/interventions/:id"
@@ -107,7 +107,7 @@ function App() {
         />
         <Route
           path="/disponibilites"
-          element={user ? <DisponibiliteGestion /> : <Navigate to="/login" />}
+          element={user  && user.role === 'admin' ? <DisponibiliteGestion /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>

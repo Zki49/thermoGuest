@@ -64,8 +64,8 @@ const Navbar = ({ user, onLogout }) => {
             {user.role !== 'technician' && (
               <Nav.Link 
                 as={Link} 
-                to="/facturation" 
-                className={`d-flex align-items-center gap-2 ${location.pathname === '/facturation' ? 'active' : ''}`}
+                to="/facturations" 
+                className={`d-flex align-items-center gap-2 ${location.pathname === '/facturations' ? 'active' : ''}`}
               >
                 <i className="bi bi-journal-text"></i>
                 Facturations

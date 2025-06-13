@@ -23,7 +23,8 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-const Planning = ({ user }) => {
+const Planning = ({ user: userProp }) => {
+  const [user, setUser] = useState(userProp || null);
   const [events, setEvents] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [technicians, setTechnicians] = useState([]);
@@ -33,6 +34,14 @@ const Planning = ({ user }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!userProp) {
+      const userData = localStorage.getItem('user');
+      if (userData) setUser(JSON.parse(userData));
+    }
+  }, [userProp]);
+
+  useEffect(() => {
+    if (!user) return;
     const fetchAll = async () => {
       try {
         const [interRes, techRes] = await Promise.all([
@@ -47,13 +56,8 @@ const Planning = ({ user }) => {
           status: intervention.status,
           user_id: intervention.user_id
         }));
-        let currentUser = user;
-        if (!currentUser) {
-          const userData = localStorage.getItem('user');
-          if (userData) currentUser = JSON.parse(userData);
-        }
-        if (currentUser && currentUser.role === 'technician') {
-          events = events.filter(ev => String(ev.user_id) === String(currentUser.id));
+        if (user.role === 'technician') {
+          events = events.filter(ev => String(ev.user_id) === String(user.id));
         }
         setAllEvents(events);
         setEvents(events);
@@ -96,9 +100,8 @@ const Planning = ({ user }) => {
         <h2 className="mb-0">Planning</h2>
       </Card.Header>
       <Card.Body>
-        {/* Afficher le filtre seulement si ce n'est pas un technicien */}
         {user ? (
-          user.role !== 'technician' && (
+          user.role === 'admin' && (
             <Form.Group className="mb-3" controlId="technicianSelect">
               <Form.Label>Filtrer par technicien</Form.Label>
               <Form.Select value={selectedTechnician} onChange={handleTechnicianChange}>

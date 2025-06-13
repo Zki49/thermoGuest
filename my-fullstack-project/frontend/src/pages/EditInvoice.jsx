@@ -255,7 +255,25 @@ const EditInvoice = () => {
             <Card>
               <Card.Header className="bg-light fw-bold d-flex align-items-center justify-content-between">
                 <span>Produits / Services</span>
-                <Button variant="warning" size="sm" onClick={handleAddProduct}><i className="bi bi-plus"></i></Button>
+                <span
+                  onClick={handleAddProduct}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    background: '#ffc107',
+                    color: '#212529',
+                    fontSize: 28,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.08)'
+                  }}
+                  title="Ajouter un produit ou service"
+                >
+                  <i className="bi bi-plus"></i>
+                </span>
               </Card.Header>
               <Card.Body>
                 <Row className="mb-2 fw-bold text-center">

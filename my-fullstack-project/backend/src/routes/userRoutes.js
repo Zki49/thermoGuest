@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const User = require('../models/User');
+const logUser = require('../middleware/logUser');
+const authorizeRole = require('../middleware/authorizeRole');
+
 
 // Middleware de logging
 router.use((req, res, next) => {
@@ -13,19 +16,19 @@ router.use((req, res, next) => {
 });
 
 // Routes pour les utilisateurs
-router.get('/users/technicians/available', userController.getAvailableTechnicians);
-router.get('/users', userController.getAllUsers);
-router.post('/users', userController.createUser);
+router.get('/users/technicians/available', logUser, authorizeRole(['admin']), userController.getAvailableTechnicians);
+router.get('/users', logUser, authorizeRole(['admin']), userController.getAllUsers);
+router.post('/users', logUser, authorizeRole(['admin']), userController.createUser);
 router.post('/login', userController.login);
 router.post('/loginAsAdmin', userController.loginAsAdmin);
 router.post('/loginAsTechnician1', userController.loginAsTechnician1);
 router.post('/loginAsTechnician2', userController.loginAsTechnician2);
 router.post('/loginAsClient1', userController.loginAsClient1);
 router.get('/verify-token', userController.verifyToken);
-router.get('/users/clients', userController.getAllClients);
-router.get('/users/technicians', userController.getAllTechnicians);
+router.get('/users/clients', logUser, authorizeRole(['admin']), userController.getAllClients);
+router.get('/users/technicians', logUser, authorizeRole(['admin']), userController.getAllTechnicians);
 // Récupérer un utilisateur par ID (doit être après les routes spécifiques)
-router.get('/users/:id', async (req, res) => {
+router.get('/users/:id', logUser, authorizeRole(['admin']), async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id, {
       attributes: ['id', 'first_name', 'last_name', 'email', 'role']

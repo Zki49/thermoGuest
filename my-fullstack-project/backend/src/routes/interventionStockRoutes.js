@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const interventionStockController = require('../controllers/interventionStockController');
+const logUser = require('../middleware/logUser');
+const authorizeRole = require('../middleware/authorizeRole');
+
 
 // Middleware de logging (optionnel, mais utile pour le débogage)
 router.use((req, res, next) => {

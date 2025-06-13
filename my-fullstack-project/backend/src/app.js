@@ -4,9 +4,42 @@ const cors = require('cors');
 const sequelize = require('./config/database');
 const mainRoutes = require('./routes');
 const logUser = require('./middleware/logUser');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 
 const app = express();
+
+// Configuration de base Swagger
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'API Documentation',
+      version: '1.0.0',
+      description: 'Documentation de mon API Express',
+    },
+    servers: [
+      { url: 'http://localhost:3001' } // adapte le port si besoin
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        }
+      }
+    },
+    security: [{ bearerAuth: [] }],
+  },
+  apis: ['./src/routes/*.js'], // Chemin vers tes fichiers de routes
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+// Route Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(logUser);
 
