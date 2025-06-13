@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Table, Button, Form, Alert, Spinner, Row, Col } from 'react-bootstrap';
 import Navbar from '../navbar/Navbar';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const DisponibiliteGestion = () => {
   const [disponibilites, setDisponibilites] = useState([]);
   const [technicians, setTechnicians] = useState([]);
@@ -27,8 +29,8 @@ const DisponibiliteGestion = () => {
       try {
         // On charge d'abord tous les techniciens (si aucune date n'est sélectionnée)
         const [techRes, dispoRes] = await Promise.all([
-          axios.get('http://localhost:3001/api/users/technicians'),
-          axios.get('http://localhost:3001/api/disponibilites')
+          axios.get(`${API_URL}/users/technicians`),
+          axios.get(`${API_URL}/disponibilites`)
         ]);
         setTechnicians(techRes.data);
         setAllTechnicians(techRes.data);
@@ -45,7 +47,7 @@ const DisponibiliteGestion = () => {
   // Nouvelle fonction pour charger les techniciens disponibles à la date sélectionnée
   const fetchAvailableTechnicians = async (date) => {
     try {
-      const res = await axios.get(`http://localhost:3001/api/users/technicians/available?date=${encodeURIComponent(date)}`);
+      const res = await axios.get(`${API_URL}/users/technicians/available?date=${encodeURIComponent(date)}`);
       setTechnicians(res.data);
     } catch (err) {
       setError("Erreur lors du chargement des techniciens disponibles");
@@ -63,7 +65,7 @@ const DisponibiliteGestion = () => {
         //fetchAvailableTechnicians(value);
       } else {
         // Si pas de date, on recharge tous les techniciens
-        axios.get('http://localhost:3001/api/users/technicians').then(res => setTechnicians(res.data));
+        axios.get(`${API_URL}/users/technicians`).then(res => setTechnicians(res.data));
       }
     }
   };
@@ -74,11 +76,11 @@ const DisponibiliteGestion = () => {
     setError('');
     setSuccess('');
     try {
-      await axios.post('http://localhost:3001/api/disponibilites/add', form);
+      await axios.post(`${API_URL}/disponibilites/add`, form);
       setSuccess('Disponibilité ajoutée !');
       setForm({ technician_id: '', start: '', end: '' });
       // Refresh
-      const dispoRes = await axios.get('http://localhost:3001/api/disponibilites');
+      const dispoRes = await axios.get(`${API_URL}/disponibilites`);
       setDisponibilites(dispoRes.data);
     } catch (err) {
       setError("Erreur lors de l'ajout de la disponibilité");
@@ -90,7 +92,7 @@ const DisponibiliteGestion = () => {
   const handleDelete = async id => {
     if (!window.confirm('Supprimer cette disponibilité ?')) return;
     try {
-      await axios.delete(`http://localhost:3001/api/disponibilites/${id}`);
+      await axios.delete(`${API_URL}/disponibilites/${id}`);
       setDisponibilites(disponibilites.filter(d => d.id !== id));
     } catch (err) {
       setError("Erreur lors de la suppression");

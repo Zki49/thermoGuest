@@ -4,12 +4,14 @@ import axios from 'axios';
 import FeedbackCard from './FeedbackCard';
 import './FeedbackList.css';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const FeedbackList = ({ feedbacks }) => {
   const navigate = useNavigate();
 
   const handleFeedbackClick = async (feedback) => {
     try {
-      const res = await axios.get(`http://localhost:3001/api/interventions/${feedback.intervention_id}`);
+      const res = await axios.get(`${API_URL}/interventions/${feedback.intervention_id}`);
       const intervention = res.data;
       // Redirige vers la liste des interventions avec la description dans le state
       navigate('/interventions', { state: { search: intervention.description } });

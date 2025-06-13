@@ -20,6 +20,8 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const InterventionCalendar = ({ userId, role }) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ const InterventionCalendar = ({ userId, role }) => {
     const fetchInterventions = async () => {
       try {
         // Utiliser le nouvel endpoint pour les interventions du jour
-        const url = `http://localhost:3001/api/interventions/today/${userId}`;
+        const url = `${API_URL}/interventions/today/${userId}`;
         console.log('Fetching today interventions from:', url);
         const response = await axios.get(url);
         console.log('Received today interventions:', response.data);

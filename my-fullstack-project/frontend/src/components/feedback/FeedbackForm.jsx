@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './FeedbackForm.css';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const FeedbackForm = ({ interventionId, clientId, onFeedbackSubmitted }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
@@ -13,7 +15,7 @@ const FeedbackForm = ({ interventionId, clientId, onFeedbackSubmitted }) => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:3001/api/feedbacks', {
+      const response = await axios.post(`${API_URL}/feedbacks`, {
         intervention_id: interventionId,
         client_id: clientId,
         rating,

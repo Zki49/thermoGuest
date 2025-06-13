@@ -5,6 +5,8 @@ import moment from 'moment';
 
 const { TextArea } = Input;
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
   const [form] = Form.useForm();
   const [technicians, setTechnicians] = useState([]);
@@ -20,14 +22,14 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
   useEffect(() => {
     fetchMaterials();
     // Récupérer la liste des clients
-    axios.get('http://localhost:3001/api/users/clients')
+    axios.get(`${API_URL}/users/clients`)
       .then(res => setClients(res.data))
       .catch(() => setClients([]));
   }, []);
 
   const fetchMaterials = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/stocks');
+      const response = await axios.get(`${API_URL}/stocks`);
       setMaterials(response.data);
     } catch (error) {
       message.error('Erreur lors de la récupération des matériaux');
@@ -95,7 +97,7 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
       };
       delete formattedValues.technician_id;
 
-      await axios.post('http://localhost:3001/api/interventions', formattedValues);
+      await axios.post(`${API_URL}/interventions`, formattedValues);
       message.success('Intervention créée avec succès');
       form.resetFields();
       setSelectedMaterials([]);
@@ -163,7 +165,7 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
               // On vide le technicien si la date change
               form.setFieldsValue({ technician_id: undefined });
               if (value) {
-                axios.get(`http://localhost:3001/api/users/technicians/available?date=${encodeURIComponent(value.toISOString())}`)
+                axios.get(`${API_URL}/users/technicians/available?date=${encodeURIComponent(value.toISOString())}`)
                   .then(res => setTechnicians(res.data))
                   .catch(() => setTechnicians([]));
               } else {

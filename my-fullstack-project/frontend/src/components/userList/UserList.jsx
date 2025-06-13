@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,7 +12,7 @@ const UserList = () => {
     const fetchUsers = async () => {
       console.log('Début de la récupération des utilisateurs...');
       try {
-        const response = await axios.get('http://localhost:3001/api/users');
+        const response = await axios.get(`${API_URL}/users`);
         console.log('Réponse reçue:', response.data);
         setUsers(response.data);
         setLoading(false);

@@ -11,6 +11,8 @@ import InterventionView from './pages/InterventionView';
 import DisponibiliteGestion from './components/DisponibiliteForm/DisponibiliteGestion';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 // Configuration d'axios
 axios.interceptors.request.use(
   (config) => {
@@ -34,7 +36,7 @@ function App() {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('http://localhost:3001/api/verify-token');
+          const response = await axios.get(`${API_URL}/verify-token`);
           if (response.data.success) {
             setUser(response.data.user);
           } else {

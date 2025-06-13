@@ -6,6 +6,8 @@ import './InterventionList.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CreateInterventionForm from '../CreateInterventionForm';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const InterventionList = () => {
   const [interventions, setInterventions] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -35,7 +37,7 @@ const InterventionList = () => {
     }
     const fetchInterventions = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/interventions');
+        const response = await axios.get(`${API_URL}/interventions`);
         setInterventions(response.data);
         setFiltered(response.data);
         setLoading(false);
@@ -90,7 +92,7 @@ const InterventionList = () => {
     // Recharger la liste des interventions
     const fetchInterventions = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/interventions');
+        const response = await axios.get(`${API_URL}/interventions`);
         setInterventions(response.data);
         setFiltered(response.data);
       } catch (err) {
@@ -108,7 +110,7 @@ const InterventionList = () => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/interventions/${selectedIntervention.id}`, {
+      await axios.delete(`${API_URL}/interventions/${selectedIntervention.id}`, {
         data: { returnToStock }
       });
       setInterventions(interventions.filter(i => i.id !== selectedIntervention.id));

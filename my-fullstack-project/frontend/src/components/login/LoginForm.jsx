@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const LoginForm = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +20,7 @@ const LoginForm = ({ onLogin }) => {
     try {
       console.log('Envoi de la requête de connexion...', { email, password });
       
-      const response = await axios.post('http://localhost:3001/api/login', 
+      const response = await axios.post(`${API_URL}/login`, 
         { email, password },
         {
           headers: {
@@ -65,7 +67,7 @@ const LoginForm = ({ onLogin }) => {
     setResponse(null);
     
     try {
-      const response = await axios.post('http://localhost:3001/api/loginAsAdmin');
+      const response = await axios.post(`${API_URL}/loginAsAdmin`);
       
       if (response.data.success) {
         setResponse(response.data);
@@ -87,7 +89,7 @@ const LoginForm = ({ onLogin }) => {
     setResponse(null);
     
     try {
-      const response = await axios.post('http://localhost:3001/api/loginAsTechnician1');
+      const response = await axios.post(`${API_URL}/loginAsTechnician1`);
       
       if (response.data.success) {
         setResponse(response.data);
@@ -109,7 +111,7 @@ const LoginForm = ({ onLogin }) => {
     setResponse(null);
     
     try {
-      const response = await axios.post('http://localhost:3001/api/loginAsClient1');
+      const response = await axios.post(`${API_URL}/loginAsClient1`);
       
       if (response.data.success) {
         setResponse(response.data);

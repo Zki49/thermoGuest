@@ -6,6 +6,8 @@ import InterventionCalendar from '../interventionCalendar/InterventionCalendar';
 import './Dashboard.css';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Dashboard = ({ user, onLogout }) => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +28,7 @@ const Dashboard = ({ user, onLogout }) => {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        let url = 'http://localhost:3001/api/feedbacks';
+        let url = `${API_URL}/feedbacks`;
         if (user?.role === 'user') {
           url += `?user_id=${user.id}`;
         }
@@ -44,7 +46,7 @@ const Dashboard = ({ user, onLogout }) => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        let url = 'http://localhost:3001/api/tasks';
+        let url = `${API_URL}/tasks`;
         if (user?.role !== 'admin') {
           url += `?employee=${user.id}`;
         }
@@ -61,7 +63,7 @@ const Dashboard = ({ user, onLogout }) => {
 
   useEffect(() => {
     if (user?.role === 'admin' && showTaskModal) {
-      axios.get('http://localhost:3001/api/users/technicians')
+      axios.get(`${API_URL}/users/technicians`)
         .then(res => setTechnicians(res.data))
         .catch(() => setTechnicians([]));
     }
@@ -72,7 +74,7 @@ const Dashboard = ({ user, onLogout }) => {
     setCreatingTask(true);
     setTaskError(null);
     try {
-      await axios.post('http://localhost:3001/api/tasks', {
+      await axios.post(`${API_URL}/tasks`, {
         employee: selectedTechnician,
         description: taskDescription
       });
@@ -80,7 +82,7 @@ const Dashboard = ({ user, onLogout }) => {
       setSelectedTechnician('');
       setTaskDescription('');
       if (user?.id) {
-        let url = 'http://localhost:3001/api/tasks';
+        let url = `${API_URL}/tasks`;
         if (user?.role !== 'admin') {
           url += `?employee=${user.id}`;
         }
@@ -99,12 +101,12 @@ const Dashboard = ({ user, onLogout }) => {
       const newStatus = currentStatus === 'À_FAIRE' ? 'FAIT' : 'À_FAIRE';
       
       // Mettre à jour le statut dans la base de données
-      await axios.patch(`http://localhost:3001/api/tasks/${taskId}/status`, {
+      await axios.patch(`${API_URL}/tasks/${taskId}/status`, {
         status: newStatus
       });
       
       // Recharger toutes les tâches
-      let url = 'http://localhost:3001/api/tasks';
+      let url = `${API_URL}/tasks`;
       if (user?.role !== 'admin') {
         url += `?employee=${user.id}`;
       }
@@ -115,7 +117,7 @@ const Dashboard = ({ user, onLogout }) => {
       console.error('Erreur lors de la mise à jour du statut:', err);
       // En cas d'erreur, recharger quand même les tâches
       try {
-        let url = 'http://localhost:3001/api/tasks';
+        let url = `${API_URL}/tasks`;
         if (user?.role !== 'admin') {
           url += `?employee=${user.id}`;
         }

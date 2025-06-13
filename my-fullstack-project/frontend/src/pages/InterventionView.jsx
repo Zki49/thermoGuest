@@ -3,6 +3,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import InterventionDetails from '../components/intervention/InterventionDetails';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const InterventionView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,15 +24,15 @@ const InterventionView = () => {
         let interventionData = intervention;
         if (!interventionData) {
           // Charger l'intervention depuis l'API si elle n'est pas dans le state
-          const res = await axios.get(`http://localhost:3001/api/interventions/${id}`);
+          const res = await axios.get(`${API_URL}/interventions/${id}`);
           interventionData = res.data;
           setIntervention(interventionData);
         }
-        const userRes = await axios.get(`http://localhost:3001/api/users/${interventionData.user_id}`);
+        const userRes = await axios.get(`${API_URL}/users/${interventionData.user_id}`);
         setUser(userRes.data);
-        const stocksRes = await axios.get(`http://localhost:3001/api/intervention-stocks/${interventionData.id}`);
+        const stocksRes = await axios.get(`${API_URL}/intervention-stocks/${interventionData.id}`);
         setStocks(stocksRes.data);
-        const feedbacksRes = await axios.get(`http://localhost:3001/api/feedbacks/intervention/${interventionData.id}`);
+        const feedbacksRes = await axios.get(`${API_URL}/feedbacks/intervention/${interventionData.id}`);
         setFeedbacks(feedbacksRes.data);
       } catch (err) {
         setError("Erreur lors du chargement des détails de l'intervention");

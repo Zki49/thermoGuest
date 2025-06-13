@@ -3,6 +3,8 @@ import { Table, Card, Spinner, Button, Modal, Form, Pagination, InputGroup } fro
 import axios from 'axios';
 import Navbar from '../navbar/Navbar';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Inventaire = () => {
   const [stocks, setStocks] = useState([]);
   const [filteredStocks, setFilteredStocks] = useState([]);
@@ -45,7 +47,7 @@ const Inventaire = () => {
     }
     const fetchStocks = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/stocks');
+        const response = await axios.get(`${API_URL}/stocks`);
         setStocks(response.data);
         setFilteredStocks(response.data);
         setLoading(false);
@@ -147,13 +149,13 @@ const Inventaire = () => {
     try {
       if (selectedStock) {
         // Mise à jour
-        const response = await axios.put(`http://localhost:3001/api/stocks/${selectedStock.id}`, formData);
+        const response = await axios.put(`${API_URL}/stocks/${selectedStock.id}`, formData);
         setStocks(stocks.map(stock => 
           stock.id === selectedStock.id ? response.data : stock
         ));
       } else {
         // Création
-        const response = await axios.post('http://localhost:3001/api/stocks', formData);
+        const response = await axios.post(`${API_URL}/stocks`, formData);
         setStocks([...stocks, response.data]);
       }
       handleClose();
@@ -165,7 +167,7 @@ const Inventaire = () => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/stocks/${selectedStock.id}`);
+      await axios.delete(`${API_URL}/stocks/${selectedStock.id}`);
       setStocks(stocks.filter(stock => stock.id !== selectedStock.id));
       handleClose();
     } catch (err) {

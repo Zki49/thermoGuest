@@ -4,6 +4,8 @@ import { Card, Button, Form, Row, Col, InputGroup, Dropdown, Spinner, Alert, Mod
 import axios from 'axios';
 import Navbar from '../components/navbar/Navbar';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const TVA_RATE = 0.21;
 
 const EditInvoice = () => {
@@ -38,8 +40,8 @@ const EditInvoice = () => {
     const fetchData = async () => {
       try {
         const [factureRes, clientsRes] = await Promise.all([
-          axios.get(`http://localhost:3001/api/documents/${id}`),
-          axios.get('http://localhost:3001/api/users/clients')
+          axios.get(`${API_URL}/documents/${id}`),
+          axios.get(`${API_URL}/users/clients`)
         ]);
         setFacture(factureRes.data);
         setClients(clientsRes.data);
@@ -51,7 +53,7 @@ const EditInvoice = () => {
         // Récupérer les produits du stock utilisés pour l'intervention
         let stockProducts = [];
         if (factureRes.data.intervention_id) {
-          const stocksRes = await axios.get(`http://localhost:3001/api/intervention-stocks/${factureRes.data.intervention_id}`);
+          const stocksRes = await axios.get(`${API_URL}/intervention-stocks/${factureRes.data.intervention_id}`);
           stockProducts = stocksRes.data.map(item => ({
             quantity: item.quantity_used,
             description: item.stock_name,
@@ -111,7 +113,7 @@ const EditInvoice = () => {
           stock_id: p.stock_id,
           quantity: p.quantity
         }));
-      await axios.put(`http://localhost:3001/api/documents/${id}`, {
+      await axios.put(`${API_URL}/documents/${id}`, {
         client_id: parseInt(selectedClient),
         products: productsToSend,
         amount: totalTTC,
@@ -131,7 +133,7 @@ const EditInvoice = () => {
   // Suppression
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/documents/${id}`);
+      await axios.delete(`${API_URL}/documents/${id}`);
       navigate('/facturations');
     } catch (err) {
       setError('Erreur lors de la suppression de la facture');
@@ -155,7 +157,7 @@ const EditInvoice = () => {
 
   useEffect(() => {
     if (showStockModal) {
-      axios.get('http://localhost:3001/api/stocks')
+      axios.get(`${API_URL}/stocks`)
         .then(res => setAvailableStocks(res.data))
         .catch(() => setAvailableStocks([]));
     }

@@ -13,6 +13,8 @@ const statusLabels = {
   'IMPAYÉE': { label: 'Impayée', color: 'danger', icon: 'bi bi-x-circle' }
 };
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Facturation = () => {
   const [factures, setFactures] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +46,7 @@ const Facturation = () => {
 
   const fetchInterventions = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/interventions');
+      const response = await axios.get(`${API_URL}/interventions`);
       setInterventions(response.data);
     } catch (err) {
       console.error('Erreur lors de la récupération des interventions:', err);
@@ -53,7 +55,7 @@ const Facturation = () => {
 
   const fetchDocuments = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/documents');
+      const response = await axios.get(`${API_URL}/documents`);
       const documents = response.data;
       setFactures(documents.filter(doc => doc.type === 'FACTURE'));
       setLoading(false);
@@ -92,7 +94,7 @@ const Facturation = () => {
         throw new Error('Intervention non trouvée');
       }
 
-      const response = await axios.post('http://localhost:3001/api/documents', {
+      const response = await axios.post(`${API_URL}/documents`, {
         intervention_id: selectedIntervention.id,
         type: 'FACTURE',
         amount: selectedIntervention.amount || 0,
