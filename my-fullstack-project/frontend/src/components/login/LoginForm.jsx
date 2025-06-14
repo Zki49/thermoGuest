@@ -76,7 +76,7 @@ const LoginForm = ({ onLogin }) => {
         setError(response.data.message || 'Erreur de connexion admin');
       }
     } catch (err) {
-      console.error('Erreur lors de la connexion admin:', err);
+      console.error('Erreur lors de la connexion admin:', response.data);
       setError(err.response?.data?.message || 'Erreur lors de la connexion admin');
     } finally {
       setLoading(false);
