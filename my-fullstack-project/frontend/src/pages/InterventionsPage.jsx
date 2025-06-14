@@ -9,6 +9,7 @@ const InterventionsPage = () => {
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
+  
   const fetchInterventions = async () => {
     try {
       setLoading(true);
