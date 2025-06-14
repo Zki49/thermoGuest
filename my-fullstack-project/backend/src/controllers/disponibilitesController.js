@@ -3,6 +3,7 @@ const Disponibilite = require('../models/disponibilite');
 // Récupérer les disponibilités (avec filtre optionnel par technicien)
 exports.getAll = async (req, res) => {
   try {
+    console.log("Récupération des disponibilités");
     const { technician_id } = req.query;
     const where = technician_id ? { technician_id } : {};
     const dispos = await Disponibilite.findAll({ where });
