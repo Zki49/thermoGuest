@@ -68,7 +68,7 @@ const LoginForm = ({ onLogin }) => {
     
     try {
       const response = await axios.post(`${API_URL}/loginAsAdmin`);
-      
+      console.log("Réponse de la connexion admin:", response.data);
       if (response.data.success) {
         setResponse(response.data);
         onLogin(response.data);
