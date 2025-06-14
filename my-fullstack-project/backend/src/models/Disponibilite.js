@@ -2,7 +2,6 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const Disponibilite = sequelize.define('Disponibilite', {
-  
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
