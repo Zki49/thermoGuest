@@ -46,7 +46,10 @@ app.use(logUser);
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',
+    'https://thermoguest.onrender.com'
+  ],
   credentials: true
 }));
 app.use(express.json());
