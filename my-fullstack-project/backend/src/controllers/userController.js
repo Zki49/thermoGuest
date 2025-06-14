@@ -2,7 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sequelize = require('../config/database');
-const Disponibilite = require('../models/Disponibilite');
+const Disponibilite = require('../models/disponibilite');
 const { Op } = require('sequelize');
 
 // Fonction pour vérifier la connexion à la base de données
