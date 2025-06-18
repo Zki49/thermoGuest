@@ -20,7 +20,7 @@ const swaggerOptions = {
       description: 'Documentation de mon API Express',
     },
     servers: [
-      { url: 'http://localhost:3001' } // adapte le port si besoin
+      { url: process.env.API_URL || 'http://localhost:3001' }
     ],
     components: {
       securitySchemes: {
@@ -46,7 +46,7 @@ app.use(logUser);
 
 // Middleware
 app.use(cors({
-  origin: [
+  origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [
     'http://localhost:3000',
     'https://thermoguest.onrender.com'
   ],

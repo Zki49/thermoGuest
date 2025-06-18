@@ -10,7 +10,7 @@ import './Planning.css';
 import axios from 'axios';
 import { Card, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-
+const API_URL = process.env.REACT_APP_API_URL;
 const locales = {
   'fr': fr,
 };
@@ -45,8 +45,8 @@ const Planning = ({ user: userProp }) => {
     const fetchAll = async () => {
       try {
         const [interRes, techRes] = await Promise.all([
-          axios.get('http://localhost:3001/api/interventions'),
-          axios.get('http://localhost:3001/api/users/technicians')
+          axios.get(`${API_URL}/interventions`),
+          axios.get(`${API_URL}/users/technicians`)
         ]);
         let events = interRes.data.map(intervention => ({
           id: intervention.id,
