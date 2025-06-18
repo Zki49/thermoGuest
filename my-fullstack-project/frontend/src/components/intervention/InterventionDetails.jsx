@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Card, Button, Container, Alert, ListGroup, Spinner, Table } from 'react-bootstrap';
 import FeedbackForm from '../feedback/FeedbackForm';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 // Fonction utilitaire pour afficher les étoiles
 const renderStars = (rating) => {
   return (
@@ -26,7 +28,7 @@ const InterventionDetails = ({ intervention, user, stocks, loading, error, navig
       setFeedbacksLoading(true);
       setFeedbacksError(null);
       try {
-        const res = await axios.get(`http://localhost:3001/api/feedbacks/intervention/${intervention.id}`);
+        const res = await axios.get(`${API_URL}/feedbacks/intervention/${intervention.id}`);
         setFeedbacks(res.data);
       } catch (e) {
         setFeedbacks([]);
@@ -42,7 +44,7 @@ const InterventionDetails = ({ intervention, user, stocks, loading, error, navig
   const handleFeedbackSubmitted = () => {
     setShowFeedbackForm(false);
     // Recharge les feedbacks depuis l'API
-    axios.get(`http://localhost:3001/api/feedbacks/intervention/${intervention.id}`)
+    axios.get(`${API_URL}/feedbacks/intervention/${intervention.id}`)
       .then(res => setFeedbacks(res.data));
   };
 
