@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
-    "build": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
+    "build": "react-scripts build && cp public/_redirects build/_redirects",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
