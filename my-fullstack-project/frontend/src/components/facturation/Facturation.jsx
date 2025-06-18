@@ -244,7 +244,7 @@ const Facturation = () => {
                     <div className="d-flex justify-content-between align-items-center mb-2">
                       <Badge bg={status.color} className="facture-badge"><i className={status.icon}></i> {status.label}</Badge>
                       <span className="ms-auto" style={{ cursor: 'pointer' }}
-                        onClick={e => { e.stopPropagation(); window.open(`http://localhost:3001/api/documents/${facture.id}/pdf`, '_blank'); }}
+                        onClick={e => { e.stopPropagation(); window.open(`${API_URL}/documents/${facture.id}/pdf`, '_blank'); }}
                       >
                         <i className="bi bi-filetype-pdf" style={{ fontSize: 24, color: '#d32f2f' }}></i>
                       </span>
