@@ -22,7 +22,6 @@ Thumbs.db
 
 # Build
 /dist
-/build
 my-fullstack-project/frontend/dist/
 my-fullstack-project/frontend/build/
 my-fullstack-project/backend/dist/
