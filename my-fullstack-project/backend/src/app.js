@@ -6,6 +6,7 @@ const mainRoutes = require('./routes');
 const logUser = require('./middleware/logUser');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const path = require('path');
 
 
 const app = express();
@@ -56,6 +57,13 @@ app.use(express.json());
 
 // Utilisation du routeur principal
 app.use('/api', mainRoutes);
+
+app.use(express.static(path.join(__dirname, 'build')));
+
+// Catch-all pour React Router
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 // Middleware pour logger l'utilisateur connecté
 
