@@ -17,7 +17,7 @@ router.use((req, res, next) => {
 
 // Routes pour les utilisateurs
 router.get('/users/technicians/available', logUser, authorizeRole(['admin']), userController.getAvailableTechnicians);
-router.get('/users', logUser, authorizeRole(['admin']), userController.getAllUsers);
+router.get('/users', logUser, userController.getAllUsers);
 router.post('/users', logUser, authorizeRole(['admin']), userController.createUser);
 router.post('/login', userController.login);
 router.post('/loginAsAdmin', userController.loginAsAdmin);
