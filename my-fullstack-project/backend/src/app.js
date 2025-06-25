@@ -50,6 +50,7 @@ app.use(cors({
   origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [
     'http://localhost:3000',
     'https://thermoguest.onrender.com'
+    'https://thermo-guest.vercel.app'
   ],
   credentials: true
 }));
