@@ -17,8 +17,8 @@ router.use((req, res, next) => {
 
 // Routes pour les utilisateurs
 router.get('/users/technicians/available', logUser, authorizeRole(['admin']), userController.getAvailableTechnicians);
-router.get('/users', logUser, userController.getAllUsers);
-router.post('/users', logUser, userController.createUser);
+router.get('/users', logUser, authorizeRole(['admin']), userController.getAllUsers);
+router.post('/users', logUser, authorizeRole(['admin']), userController.createUser);
 router.post('/login', userController.login);
 router.post('/loginAsAdmin', userController.loginAsAdmin);
 router.post('/loginAsTechnician1', userController.loginAsTechnician1);
@@ -28,7 +28,7 @@ router.get('/verify-token', userController.verifyToken);
 router.get('/users/clients', logUser, authorizeRole(['admin']), userController.getAllClients);
 router.get('/users/technicians', logUser, authorizeRole(['admin']), userController.getAllTechnicians);
 // Récupérer un utilisateur par ID (doit être après les routes spécifiques)
-router.get('/users/:id', logUser, authorizeRole(['admin']), async (req, res) => {
+router.get('/users/:id', logUser, async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id, {
       attributes: ['id', 'first_name', 'last_name', 'email', 'role']
