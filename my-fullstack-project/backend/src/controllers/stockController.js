@@ -62,7 +62,7 @@ const updateStock = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { name, description, quantity, unit_price, category } = req.body;
+    const { name, description, quantity, unit_price, category, quantity_min } = req.body;
 
     const stock = await Stock.findByPk(id);
     if (!stock) {
@@ -74,7 +74,8 @@ const updateStock = async (req, res) => {
       description,
       quantity,
       unit_price,
-      category
+      category,
+      quantity_min
     });
 
     res.json(stock);
