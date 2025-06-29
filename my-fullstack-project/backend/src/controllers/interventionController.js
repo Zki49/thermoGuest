@@ -25,19 +25,26 @@ const getAllInterventions = async (req, res) => {
 
 const getTodayInterventions = async (req, res) => {
   try {
-    const { user_id } = req.params;
+    const user = req.user;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const where = {
-      user_id: user_id,
+    let where = {
       scheduled_date: {
         [Op.gte]: today,
         [Op.lt]: tomorrow
       }
     };
+
+    // Filtrer selon le rôle de l'utilisateur
+    if (user && user.role === 'technician') {
+      where.user_id = user.id;
+    } else if (user && user.role === 'user') {
+      where.client_id = user.id;
+    }
+    // Si admin, pas de filtre supplémentaire - il voit toutes les interventions
 
     console.log('Fetching today interventions with where clause:', where);
     const interventions = await Intervention.findAll({ 
