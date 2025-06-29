@@ -49,6 +49,7 @@ const Inventaire = () => {
       try {
         const response = await axios.get(`${API_URL}/stocks`);
         setStocks(response.data);
+        
         setFilteredStocks(response.data);
         setLoading(false);
       } catch (err) {
