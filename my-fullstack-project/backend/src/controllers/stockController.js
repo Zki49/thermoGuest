@@ -37,14 +37,15 @@ const createStock = async (req, res) => {
       return res.status(503).json({ message: 'Service temporairement indisponible' });
     }
 
-    const { name, description, quantity, unit_price, category } = req.body;
+    const { name, description, quantity, unit_price, category, quantity_min } = req.body;
 
     const stock = await Stock.create({
       name,
       description,
       quantity,
       unit_price,
-      category
+      category,
+      quantity_min
     });
 
     res.status(201).json(stock);
