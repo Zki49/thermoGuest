@@ -26,7 +26,7 @@ router.post('/loginAsTechnician2', userController.loginAsTechnician2);
 router.post('/loginAsClient1', userController.loginAsClient1);
 router.get('/verify-token', userController.verifyToken);
 router.get('/users/clients', logUser, authorizeRole(['admin']), userController.getAllClients);
-router.get('/users/technicians', logUser, authorizeRole(['admin']), userController.getAllTechnicians);
+router.get('/users/technicians', logUser, authorizeRole(['admin','technician']), userController.getAllTechnicians);
 // Récupérer un utilisateur par ID (doit être après les routes spécifiques)
 router.get('/users/:id', logUser, async (req, res) => {
   try {
