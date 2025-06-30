@@ -134,32 +134,6 @@ const CreateInterventionForm = ({ visible, onCancel, onSuccess }) => {
             disabledDate={(current) => {
               return current && current < moment().startOf('day');
             }}
-            disabledTime={(current) => {
-              const currentDate = moment().startOf('day');
-              const selectedDate = current ? moment(current) : null;
-              
-              if (selectedDate && selectedDate.isSame(currentDate, 'day')) {
-                return {
-                  disabledHours: () => {
-                    const hours = [];
-                    for (let i = 0; i < moment().hour(); i++) {
-                      hours.push(i);
-                    }
-                    return hours;
-                  },
-                  disabledMinutes: (selectedHour) => {
-                    const minutes = [];
-                    if (selectedHour === moment().hour()) {
-                      for (let i = 0; i < moment().minute(); i++) {
-                        minutes.push(i);
-                      }
-                    }
-                    return minutes;
-                  }
-                };
-              }
-              return {};
-            }}
             onChange={value => {
               form.setFieldsValue({ scheduled_date: value });
               // On vide le technicien si la date change
