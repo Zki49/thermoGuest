@@ -131,7 +131,14 @@ const DisponibiliteGestion = () => {
             </Col>
             <Col md={3}>
               <Form.Label>Début</Form.Label>
-              <Form.Control type="datetime-local" name="start" value={form.start} onChange={handleChange} required />
+              <Form.Control
+                type="datetime-local"
+                name="start"
+                value={form.start}
+                onChange={handleChange}
+                required
+                step="3600"
+              />
             </Col>
             <Col md={3}>
               <Form.Label>Fin</Form.Label>
