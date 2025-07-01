@@ -44,15 +44,15 @@ const InterventionView = () => {
   }, [id]);
 
   const handleAskQuote = async () => {
-    try {
-      await axios.post('http://localhost:3001/api/tasks', {
-        description: `Demande de facture pour l'intervention #${id} : ${intervention?.description || ''}`
-      });
-      alert('Demande envoyée !');
-    } catch (err) {
-      alert("Erreur lors de la demande ");
-    }
-  };
+  try {
+    await axios.post(`${API_URL}/api/tasks`, {
+      description: `Demande de facture pour l'intervention #${id} : ${intervention?.description || ''}`
+    });
+    alert('Demande envoyée !');
+  } catch (err) {
+    alert("Erreur lors de la demande");
+  }
+};
 
   const handleFeedback = () => {
     // À compléter selon la logique de feedback
