@@ -45,7 +45,7 @@ const InterventionView = () => {
 
   const handleAskQuote = async () => {
   try {
-    await axios.post(`${API_URL}/api/tasks`, {
+    await axios.post(`${API_URL}/tasks`, {
       description: `Demande de facture pour l'intervention #${id} : ${intervention?.description || ''}`
     });
     alert('Demande envoyée !');
